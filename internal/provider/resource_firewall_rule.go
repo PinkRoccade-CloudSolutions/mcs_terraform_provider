@@ -10,6 +10,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -116,41 +119,49 @@ func (r *FirewallRuleResource) Schema(_ context.Context, _ resource.SchemaReques
 				Description: "Action for the rule (true=allow, false=deny).",
 			},
 			"used": schema.BoolAttribute{
-				Computed:    true,
-				Description: "Whether the rule is currently in use.",
+				Computed:      true,
+				Description:   "Whether the rule is currently in use.",
+				PlanModifiers: []planmodifier.Bool{boolplanmodifier.UseStateForUnknown()},
 			},
 			"compliant": schema.BoolAttribute{
-				Computed:    true,
-				Description: "Whether the rule is compliant.",
+				Computed:      true,
+				Description:   "Whether the rule is compliant.",
+				PlanModifiers: []planmodifier.Bool{boolplanmodifier.UseStateForUnknown()},
 			},
 			"uuid": schema.StringAttribute{
-				Computed:    true,
-				Description: "UUID assigned by the firewall.",
+				Computed:      true,
+				Description:   "UUID assigned by the firewall.",
+				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
 			"policyid": schema.Int64Attribute{
-				Computed:    true,
-				Description: "Policy ID assigned by the firewall.",
+				Computed:      true,
+				Description:   "Policy ID assigned by the firewall.",
+				PlanModifiers: []planmodifier.Int64{int64planmodifier.UseStateForUnknown()},
 			},
 			"hit_count": schema.Int64Attribute{
-				Computed:    true,
-				Description: "Number of times the rule was hit.",
+				Computed:      true,
+				Description:   "Number of times the rule was hit.",
+				PlanModifiers: []planmodifier.Int64{int64planmodifier.UseStateForUnknown()},
 			},
 			"last_hit": schema.StringAttribute{
-				Computed:    true,
-				Description: "Timestamp of the last hit.",
+				Computed:      true,
+				Description:   "Timestamp of the last hit.",
+				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
 			"group": schema.StringAttribute{
-				Computed:    true,
-				Description: "Group the rule belongs to.",
+				Computed:      true,
+				Description:   "Group the rule belongs to.",
+				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
 			"comment": schema.StringAttribute{
 				Optional:    true,
 				Description: "Comment for the rule.",
 			},
 			"compliancy_errors": schema.ListAttribute{
-				ElementType: types.StringType,
-				Computed:    true,
-				Description: "List of compliancy errors.",
+				ElementType:   types.StringType,
+				Computed:      true,
+				Description:   "List of compliancy errors.",
+				PlanModifiers: []planmodifier.List{listplanmodifier.UseStateForUnknown()},
 			},
 		},
 	}

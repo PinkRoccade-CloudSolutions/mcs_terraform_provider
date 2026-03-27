@@ -60,12 +60,18 @@ func (r *MonitorIPResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 			},
 			"timestamp": schema.StringAttribute{
 				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"notify_email": schema.StringAttribute{
 				Optional: true,
 			},
 			"last_check_timestamp": schema.StringAttribute{
 				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"customer": schema.StringAttribute{
 				Required: true,

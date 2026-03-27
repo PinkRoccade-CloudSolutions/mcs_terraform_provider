@@ -82,10 +82,12 @@ func (r *ContactResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 				Required: true,
 			},
 			"created_at_timestamp": schema.StringAttribute{
-				Computed: true,
+				Computed:      true,
+				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
 			"updated_at_timestamp": schema.StringAttribute{
-				Computed: true,
+				Computed:      true,
+				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
 		},
 	}

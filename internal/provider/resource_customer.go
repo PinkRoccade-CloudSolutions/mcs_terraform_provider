@@ -78,10 +78,12 @@ func (r *CustomerResource) Schema(_ context.Context, _ resource.SchemaRequest, r
 				ElementType: types.Int64Type,
 			},
 			"created_at_timestamp": schema.StringAttribute{
-				Computed: true,
+				Computed:      true,
+				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
 			"updated_at_timestamp": schema.StringAttribute{
-				Computed: true,
+				Computed:      true,
+				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
 		},
 	}

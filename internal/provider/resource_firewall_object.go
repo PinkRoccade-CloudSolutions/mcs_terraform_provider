@@ -7,6 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -64,8 +65,9 @@ func (r *FirewallObjectResource) Schema(_ context.Context, _ resource.SchemaRequ
 				Description: "Name of the firewall object.",
 			},
 			"uuid": schema.StringAttribute{
-				Computed:    true,
-				Description: "UUID assigned by the firewall.",
+				Computed:      true,
+				Description:   "UUID assigned by the firewall.",
+				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
 			"address": schema.StringAttribute{
 				Optional:    true,
@@ -80,8 +82,9 @@ func (r *FirewallObjectResource) Schema(_ context.Context, _ resource.SchemaRequ
 				Description: "Comment for the object.",
 			},
 			"used": schema.BoolAttribute{
-				Computed:    true,
-				Description: "Whether the object is currently in use.",
+				Computed:      true,
+				Description:   "Whether the object is currently in use.",
+				PlanModifiers: []planmodifier.Bool{boolplanmodifier.UseStateForUnknown()},
 			},
 		},
 	}

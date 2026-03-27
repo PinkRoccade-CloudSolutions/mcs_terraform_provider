@@ -9,6 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -68,8 +69,9 @@ func (r *FirewallServiceResource) Schema(_ context.Context, _ resource.SchemaReq
 				Description: "Name of the firewall service.",
 			},
 			"uuid": schema.StringAttribute{
-				Computed:    true,
-				Description: "UUID assigned by the firewall.",
+				Computed:      true,
+				Description:   "UUID assigned by the firewall.",
+				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
 			"protocol": schema.StringAttribute{
 				Optional:    true,
@@ -90,8 +92,9 @@ func (r *FirewallServiceResource) Schema(_ context.Context, _ resource.SchemaReq
 				Description: "List of UDP port ranges.",
 			},
 			"used": schema.BoolAttribute{
-				Computed:    true,
-				Description: "Whether the service is currently in use.",
+				Computed:      true,
+				Description:   "Whether the service is currently in use.",
+				PlanModifiers: []planmodifier.Bool{boolplanmodifier.UseStateForUnknown()},
 			},
 		},
 	}
