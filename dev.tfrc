@@ -1,0 +1,7 @@
+provider_installation {
+  dev_overrides {
+    "registry.terraform.io/pinkroccade/mcs" = "/Users/Eddie.Vels/PycharmProjects/mcs_terraform_provider"
+  }
+
+  direct {}
+}

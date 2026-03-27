@@ -122,6 +122,7 @@ func (p *MCSProvider) DataSources(_ context.Context) []func() datasource.DataSou
 		NewDomainDataSource,
 		NewJobDataSource,
 		NewNetworkDataSource,
+		NewTenantDataSource,
 		NewZoneDataSource,
 	}
 }
