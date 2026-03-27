@@ -49,11 +49,6 @@ func configFromRaw(t *testing.T, s schema.Schema, values map[string]interface{})
 	}
 }
 
-type routeKey struct {
-	Method string
-	Prefix string
-}
-
 type mockRoute struct {
 	prefix  string
 	handler func(w http.ResponseWriter, r *http.Request, body []byte)
@@ -88,7 +83,7 @@ func (m *mockAPIServer) Close() {
 
 func (m *mockAPIServer) handle(w http.ResponseWriter, r *http.Request) {
 	body, _ := io.ReadAll(r.Body)
-	defer r.Body.Close()
+	_ = r.Body.Close()
 
 	m.mu.Lock()
 	m.calls = append(m.calls, recordedCall{
@@ -113,7 +108,7 @@ func (m *mockAPIServer) handle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusNotFound)
-	fmt.Fprintf(w, `{"detail":"Not found: %s %s"}`, r.Method, path)
+	_, _ = fmt.Fprintf(w, `{"detail":"Not found: %s %s"}`, r.Method, path)
 }
 
 func (m *mockAPIServer) On(prefix string, handler func(w http.ResponseWriter, r *http.Request, body []byte)) {
@@ -123,7 +118,7 @@ func (m *mockAPIServer) On(prefix string, handler func(w http.ResponseWriter, r 
 }
 
 func (m *mockAPIServer) OnCRUD(basePath string, resourceJSON string) {
-	var nextID int = 1
+	var nextID = 1
 
 	m.On(basePath, func(w http.ResponseWriter, r *http.Request, body []byte) {
 		w.Header().Set("Content-Type", "application/json")
@@ -144,11 +139,11 @@ func (m *mockAPIServer) OnCRUD(basePath string, resourceJSON string) {
 				nextID++
 			}
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(merged)
+			_ = json.NewEncoder(w).Encode(merged)
 
 		case http.MethodGet:
 			w.WriteHeader(http.StatusOK)
-			fmt.Fprint(w, resourceJSON)
+			_, _ = fmt.Fprint(w, resourceJSON)
 
 		case http.MethodPut, http.MethodPatch:
 			var merged map[string]interface{}
@@ -161,7 +156,7 @@ func (m *mockAPIServer) OnCRUD(basePath string, resourceJSON string) {
 				}
 			}
 			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(merged)
+			_ = json.NewEncoder(w).Encode(merged)
 
 		case http.MethodDelete:
 			w.WriteHeader(http.StatusNoContent)

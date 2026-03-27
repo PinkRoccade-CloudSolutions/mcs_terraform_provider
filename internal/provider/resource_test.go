@@ -22,7 +22,7 @@ func TestAccAlertResource_CRUD(t *testing.T) {
 		switch r.Method {
 		case http.MethodPost:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			resp := map[string]interface{}{
 				"id": 1, "resource": req["resource"], "event": req["event"],
 				"createtime": "2025-01-01T00:00:00Z", "lastupdate": "2025-01-01T00:00:00Z",
@@ -32,16 +32,16 @@ func TestAccAlertResource_CRUD(t *testing.T) {
 				resp["severity"] = v
 			}
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodGet:
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"id": 1, "resource": "web-server", "event": "cpu_high",
 				"createtime": "2025-01-01T00:00:00Z", "lastupdate": "2025-01-01T00:00:00Z",
 				"duplicate_count": 0, "timeout": 300, "severity": "major",
 			})
 		case http.MethodPut:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			resp := map[string]interface{}{
 				"id": 1, "resource": req["resource"], "event": req["event"],
 				"createtime": "2025-01-01T00:00:00Z", "lastupdate": "2025-01-01T00:00:00Z",
@@ -50,7 +50,7 @@ func TestAccAlertResource_CRUD(t *testing.T) {
 			if v, ok := req["severity"]; ok {
 				resp["severity"] = v
 			}
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodDelete:
 			w.WriteHeader(http.StatusNoContent)
 		}
@@ -89,25 +89,25 @@ func TestAccCertificateResource_CRUD(t *testing.T) {
 		switch r.Method {
 		case http.MethodPost:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			resp := map[string]interface{}{"id": "cert-001"}
 			for k, v := range req {
 				resp[k] = v
 			}
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodGet:
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"id": "cert-001", "name": "my-cert",
 			})
 		case http.MethodPut:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			resp := map[string]interface{}{"id": "cert-001"}
 			for k, v := range req {
 				resp[k] = v
 			}
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodDelete:
 			w.WriteHeader(http.StatusNoContent)
 		}
@@ -143,7 +143,7 @@ func TestAccContactResource_CRUD(t *testing.T) {
 		switch r.Method {
 		case http.MethodPost:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			resp := map[string]interface{}{
 				"id": 10, "company": req["company"], "tenant": req["tenant"],
 				"firstname": req["firstname"], "lastname": req["lastname"],
@@ -152,9 +152,9 @@ func TestAccContactResource_CRUD(t *testing.T) {
 				"updated_at_timestamp": "2025-01-01T00:00:00Z",
 			}
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodGet:
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"id": 10, "company": "ACME", "tenant": 1,
 				"firstname": "John", "lastname": "Doe",
 				"email": "john@example.com", "phone": "123-456", "address": "123 Main St",
@@ -163,7 +163,7 @@ func TestAccContactResource_CRUD(t *testing.T) {
 			})
 		case http.MethodPut:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			resp := map[string]interface{}{
 				"id": 10, "company": req["company"], "tenant": req["tenant"],
 				"firstname": req["firstname"], "lastname": req["lastname"],
@@ -171,7 +171,7 @@ func TestAccContactResource_CRUD(t *testing.T) {
 				"created_at_timestamp": "2025-01-01T00:00:00Z",
 				"updated_at_timestamp": "2025-01-01T00:00:00Z",
 			}
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodDelete:
 			w.WriteHeader(http.StatusNoContent)
 		}
@@ -221,11 +221,11 @@ func TestAccCustomerResource_CRUD(t *testing.T) {
 		switch r.Method {
 		case http.MethodPost:
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(customerResponse)
+			_ = json.NewEncoder(w).Encode(customerResponse)
 		case http.MethodGet:
-			json.NewEncoder(w).Encode(customerResponse)
+			_ = json.NewEncoder(w).Encode(customerResponse)
 		case http.MethodPut:
-			json.NewEncoder(w).Encode(customerResponse)
+			_ = json.NewEncoder(w).Encode(customerResponse)
 		case http.MethodDelete:
 			w.WriteHeader(http.StatusNoContent)
 		}
@@ -266,7 +266,7 @@ func TestAccDblResource_CRUD(t *testing.T) {
 		switch r.Method {
 		case http.MethodPost:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			resp := map[string]interface{}{
 				"id": 5, "ipaddress": req["ipaddress"],
 				"timestamp": "2025-01-01T00:00:00Z", "occurrence": 1, "hostname": "bad-host",
@@ -278,20 +278,20 @@ func TestAccDblResource_CRUD(t *testing.T) {
 				resp["persistent"] = v
 			}
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodGet:
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"id": 5, "ipaddress": "10.0.0.1",
 				"timestamp": "2025-01-01T00:00:00Z", "occurrence": 1, "hostname": "bad-host",
 			})
 		case http.MethodPut:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			resp := map[string]interface{}{
 				"id": 5, "ipaddress": req["ipaddress"],
 				"timestamp": "2025-01-01T00:00:00Z", "occurrence": 2, "hostname": "bad-host",
 			}
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodDelete:
 			w.WriteHeader(http.StatusNoContent)
 		}
@@ -327,26 +327,26 @@ func TestAccDomainDblResource_CRUD(t *testing.T) {
 		switch r.Method {
 		case http.MethodPost:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			resp := map[string]interface{}{
 				"id": 3, "domainname": req["domainname"], "source": req["source"],
 				"timestamp": "2025-01-01T00:00:00Z", "occurrence": 1,
 			}
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodGet:
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"id": 3, "domainname": "evil.example.com", "source": "manual",
 				"timestamp": "2025-01-01T00:00:00Z", "occurrence": 1,
 			})
 		case http.MethodPut:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			resp := map[string]interface{}{
 				"id": 3, "domainname": req["domainname"], "source": req["source"],
 				"timestamp": "2025-01-01T00:00:00Z", "occurrence": 2,
 			}
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodDelete:
 			w.WriteHeader(http.StatusNoContent)
 		}
@@ -383,18 +383,18 @@ func TestAccCsActionResource_CRUD(t *testing.T) {
 		switch r.Method {
 		case http.MethodPost:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			resp := map[string]interface{}{"id": "act-001", "name": req["name"]}
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodGet:
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"id": "act-001", "name": "redirect-action",
 			})
 		case http.MethodPut:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.Unmarshal(body, &req)
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"id": "act-001", "name": req["name"],
 			})
 		case http.MethodDelete:
@@ -432,18 +432,18 @@ func TestAccCsPolicyResource_CRUD(t *testing.T) {
 		switch r.Method {
 		case http.MethodPost:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			resp := map[string]interface{}{"id": "pol-001", "name": req["name"]}
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodGet:
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"id": "pol-001", "name": "routing-policy",
 			})
 		case http.MethodPut:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.Unmarshal(body, &req)
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"id": "pol-001", "name": req["name"],
 			})
 		case http.MethodDelete:
@@ -481,7 +481,7 @@ func TestAccCsvServerResource_CRUD(t *testing.T) {
 		switch r.Method {
 		case http.MethodPost:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			resp := map[string]interface{}{
 				"id": "csv-001", "name": req["name"], "ufname": req["ufname"],
 				"type": req["type"],
@@ -493,16 +493,16 @@ func TestAccCsvServerResource_CRUD(t *testing.T) {
 				resp["certificate"] = v
 			}
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodGet:
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"id": "csv-001", "name": "my-csv", "ufname": "my-csv-uf",
 				"type": "HTTP",
 				"policies": []string{"pol-1"}, "certificate": []string{"cert-1"},
 			})
 		case http.MethodPut:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			resp := map[string]interface{}{
 				"id": "csv-001", "name": req["name"], "ufname": req["ufname"],
 				"type": req["type"],
@@ -513,7 +513,7 @@ func TestAccCsvServerResource_CRUD(t *testing.T) {
 			if v, ok := req["certificate"]; ok {
 				resp["certificate"] = v
 			}
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodDelete:
 			w.WriteHeader(http.StatusNoContent)
 		}
@@ -553,7 +553,7 @@ func TestAccFirewallObjectResource_CRUD(t *testing.T) {
 		switch r.Method {
 		case http.MethodPost:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			resp := map[string]interface{}{
 				"name": req["name"], "uuid": "fw-obj-uuid-001", "used": false,
 			}
@@ -561,9 +561,9 @@ func TestAccFirewallObjectResource_CRUD(t *testing.T) {
 				resp["address"] = v
 			}
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodGet:
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"name": "test-obj", "uuid": "fw-obj-uuid-001", "used": false,
 				"address": "10.0.0.1",
 			})
@@ -604,7 +604,7 @@ func TestAccFirewallObjectGroupResource_CRUD(t *testing.T) {
 		switch r.Method {
 		case http.MethodPost:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			resp := map[string]interface{}{
 				"name": req["name"], "uuid": "grp-uuid-001", "used": false,
 			}
@@ -612,9 +612,9 @@ func TestAccFirewallObjectGroupResource_CRUD(t *testing.T) {
 				resp["member"] = v
 			}
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodGet:
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"name": "test-group", "uuid": "grp-uuid-001", "used": false,
 				"member": []string{"obj-1"},
 			})
@@ -664,9 +664,9 @@ func TestAccFirewallRuleResource_CRUD(t *testing.T) {
 				"compliancy_errors": []string{},
 			}
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodGet:
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"enabled": true, "action": true, "used": false, "compliant": true,
 				"uuid": "rule-uuid-001", "policyid": 100, "hit_count": 0,
 				"last_hit": "", "group": "",
@@ -717,7 +717,7 @@ func TestAccFirewallServiceResource_CRUD(t *testing.T) {
 		switch r.Method {
 		case http.MethodPost:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			resp := map[string]interface{}{
 				"name": req["name"], "uuid": "svc-uuid-001", "used": false,
 			}
@@ -728,9 +728,9 @@ func TestAccFirewallServiceResource_CRUD(t *testing.T) {
 				resp["udp_portrange"] = v
 			}
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodGet:
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"name": "https-svc", "uuid": "svc-uuid-001", "used": false,
 				"tcp_portrange": []string{"443"}, "udp_portrange": []string{},
 			})
@@ -772,7 +772,7 @@ func TestAccFirewallServiceGroupResource_CRUD(t *testing.T) {
 		switch r.Method {
 		case http.MethodPost:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			resp := map[string]interface{}{
 				"name": req["name"], "uuid": "svcgrp-uuid-001", "used": false,
 			}
@@ -780,9 +780,9 @@ func TestAccFirewallServiceGroupResource_CRUD(t *testing.T) {
 				resp["member"] = v
 			}
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodGet:
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"name": "web-services", "uuid": "svcgrp-uuid-001", "used": false,
 				"member": []string{"svc-1"},
 			})
@@ -823,18 +823,18 @@ func TestAccLbMonitorResource_CRUD(t *testing.T) {
 		switch r.Method {
 		case http.MethodPost:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			resp := map[string]interface{}{"id": "mon-001", "name": req["name"]}
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodGet:
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"id": "mon-001", "name": "http-monitor",
 			})
 		case http.MethodPut:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.Unmarshal(body, &req)
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"id": "mon-001", "name": req["name"],
 			})
 		case http.MethodDelete:
@@ -872,20 +872,20 @@ func TestAccLbServicegroupResource_CRUD(t *testing.T) {
 		switch r.Method {
 		case http.MethodPost:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			resp := map[string]interface{}{
 				"id": "sg-001", "name": req["name"], "type": req["type"],
 			}
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodGet:
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"id": "sg-001", "name": "backend-sg", "type": "HTTP",
 			})
 		case http.MethodPut:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.Unmarshal(body, &req)
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"id": "sg-001", "name": req["name"], "type": req["type"],
 			})
 		case http.MethodDelete:
@@ -924,7 +924,7 @@ func TestAccLbServicegroupMemberResource_CRUD(t *testing.T) {
 		switch r.Method {
 		case http.MethodPost:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			resp := map[string]interface{}{
 				"id": "sgm-001", "address": req["address"], "servername": req["servername"],
 				"port": 0,
@@ -933,15 +933,15 @@ func TestAccLbServicegroupMemberResource_CRUD(t *testing.T) {
 				resp["port"] = v
 			}
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodGet:
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"id": "sgm-001", "address": "10.0.0.5", "servername": "web1", "port": 0,
 			})
 		case http.MethodPut:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.Unmarshal(body, &req)
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"id": "sgm-001", "address": req["address"], "servername": req["servername"],
 				"port": req["port"],
 			})
@@ -981,7 +981,7 @@ func TestAccLbvServerResource_CRUD(t *testing.T) {
 		switch r.Method {
 		case http.MethodPost:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			resp := map[string]interface{}{
 				"id": "lbv-001", "name": req["name"],
 				"servicegroup": req["servicegroup"],
@@ -990,16 +990,16 @@ func TestAccLbvServerResource_CRUD(t *testing.T) {
 				resp["certificate"] = v
 			}
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodGet:
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"id": "lbv-001", "name": "my-lbv",
 				"servicegroup": []string{"sg-1"}, "certificate": []string{"cert-1"},
 			})
 		case http.MethodPut:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.Unmarshal(body, &req)
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"id": "lbv-001", "name": req["name"],
 				"servicegroup": req["servicegroup"],
 			})
@@ -1040,20 +1040,20 @@ func TestAccMonitorIPResource_CRUD(t *testing.T) {
 		switch r.Method {
 		case http.MethodPost:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			resp := map[string]interface{}{
 				"id": "mip-001", "ipaddress": req["ipaddress"], "customer": req["customer"],
 			}
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodGet:
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"id": "mip-001", "ipaddress": "10.0.0.100", "customer": "acme",
 			})
 		case http.MethodPut:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.Unmarshal(body, &req)
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"id": "mip-001", "ipaddress": req["ipaddress"], "customer": req["customer"],
 			})
 		case http.MethodDelete:
@@ -1092,7 +1092,7 @@ func TestAccSiteToSiteVPNResource_CRUD(t *testing.T) {
 		switch r.Method {
 		case http.MethodPost:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			resp := map[string]interface{}{
 				"id": 7, "uuid": "vpn-uuid-001", "name": req["name"],
 				"state": req["state"], "last_status": req["last_status"],
@@ -1102,9 +1102,9 @@ func TestAccSiteToSiteVPNResource_CRUD(t *testing.T) {
 				"updated_at_timestamp": "2025-01-01T00:00:00Z",
 			}
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodGet:
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"id": 7, "uuid": "vpn-uuid-001", "name": "hq-to-branch",
 				"state": "up", "last_status": "ok", "resets": 0,
 				"last_check": "2025-01-01T12:00:00Z", "last_reset": "",
@@ -1113,13 +1113,13 @@ func TestAccSiteToSiteVPNResource_CRUD(t *testing.T) {
 			})
 		case http.MethodPut:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			resp := map[string]interface{}{
 				"id": 7, "uuid": "vpn-uuid-001", "name": req["name"],
 				"created_at_timestamp": "2025-01-01T00:00:00Z",
 				"updated_at_timestamp": "2025-01-01T00:00:00Z",
 			}
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodDelete:
 			w.WriteHeader(http.StatusNoContent)
 		}
@@ -1161,24 +1161,24 @@ func TestAccVirtualDatacenterResource_CRUD(t *testing.T) {
 		switch r.Method {
 		case http.MethodPost:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
+			_ = json.Unmarshal(body, &req)
 			resp := map[string]interface{}{
 				"id": "vdc-001", "name": req["name"], "customer": req["customer"],
 				"created_at_timestamp": "2025-01-01T00:00:00Z",
 				"updated_at_timestamp": "2025-01-01T00:00:00Z",
 			}
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(resp)
+			_ = json.NewEncoder(w).Encode(resp)
 		case http.MethodGet:
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"id": "vdc-001", "name": "prod-dc", "customer": "acme",
 				"created_at_timestamp": "2025-01-01T00:00:00Z",
 				"updated_at_timestamp": "2025-01-01T00:00:00Z",
 			})
 		case http.MethodPut:
 			var req map[string]interface{}
-			json.Unmarshal(body, &req)
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.Unmarshal(body, &req)
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"id": "vdc-001", "name": req["name"], "customer": req["customer"],
 				"created_at_timestamp": "2025-01-01T00:00:00Z",
 				"updated_at_timestamp": "2025-01-01T00:00:00Z",
@@ -1220,14 +1220,14 @@ func TestAccAlertResource_ReadNotFound_RemovesFromState(t *testing.T) {
 		switch r.Method {
 		case http.MethodPost:
 			callCount++
-			json.NewEncoder(w).Encode(map[string]interface{}{
+			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"id": callCount, "resource": "web", "event": "test",
 				"createtime": "2025-01-01T00:00:00Z", "lastupdate": "2025-01-01T00:00:00Z",
 				"duplicate_count": 0, "timeout": 300,
 			})
 		case http.MethodGet:
 			if callCount > 1 {
-				json.NewEncoder(w).Encode(map[string]interface{}{
+				_ = json.NewEncoder(w).Encode(map[string]interface{}{
 					"id": callCount, "resource": "web", "event": "test",
 					"createtime": "2025-01-01T00:00:00Z", "lastupdate": "2025-01-01T00:00:00Z",
 					"duplicate_count": 0, "timeout": 300,
@@ -1277,11 +1277,11 @@ func TestAccNATTranslationResource_CRUD(t *testing.T) {
 		switch r.Method {
 		case http.MethodPost:
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(natResp)
+			_ = json.NewEncoder(w).Encode(natResp)
 		case http.MethodGet:
-			json.NewEncoder(w).Encode(natResp)
+			_ = json.NewEncoder(w).Encode(natResp)
 		case http.MethodPut:
-			json.NewEncoder(w).Encode(natResp)
+			_ = json.NewEncoder(w).Encode(natResp)
 		case http.MethodDelete:
 			w.WriteHeader(http.StatusNoContent)
 		}
@@ -1332,11 +1332,11 @@ func TestAccPublicIPAddressResource_CRUD(t *testing.T) {
 		switch r.Method {
 		case http.MethodPost:
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(pipResp)
+			_ = json.NewEncoder(w).Encode(pipResp)
 		case http.MethodGet:
-			json.NewEncoder(w).Encode(pipResp)
+			_ = json.NewEncoder(w).Encode(pipResp)
 		case http.MethodPut:
-			json.NewEncoder(w).Encode(pipResp)
+			_ = json.NewEncoder(w).Encode(pipResp)
 		case http.MethodDelete:
 			w.WriteHeader(http.StatusNoContent)
 		}

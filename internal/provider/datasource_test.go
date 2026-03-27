@@ -19,7 +19,7 @@ func TestAccDomainDataSource_ByName(t *testing.T) {
 
 	mock.On("/api/tenant/domains", func(w http.ResponseWriter, r *http.Request, _ []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{
 			"results": []map[string]interface{}{
 				{"id": 1, "uuid": "dom-uuid-1", "name": "prod", "description": "Production", "adom": "adom1", "zone": "zone1"},
 				{"id": 2, "uuid": "dom-uuid-2", "name": "staging", "description": "Staging", "adom": "adom1", "zone": "zone2"},
@@ -54,7 +54,7 @@ func TestAccDomainDataSource_ListAll(t *testing.T) {
 
 	mock.On("/api/tenant/domains", func(w http.ResponseWriter, r *http.Request, _ []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{
 			"results": []map[string]interface{}{
 				{"id": 1, "uuid": "dom-uuid-1", "name": "prod", "description": "Production", "adom": "adom1", "zone": "zone1"},
 				{"id": 2, "uuid": "dom-uuid-2", "name": "staging", "description": "Staging", "adom": "adom1", "zone": "zone2"},
@@ -85,7 +85,7 @@ func TestAccDomainDataSource_NotFound(t *testing.T) {
 
 	mock.On("/api/tenant/domains", func(w http.ResponseWriter, r *http.Request, _ []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{
 			"results": []map[string]interface{}{},
 		})
 	})
@@ -114,7 +114,7 @@ func TestAccJobDataSource_Read(t *testing.T) {
 
 	mock.On("/api/jobs/job", func(w http.ResponseWriter, r *http.Request, _ []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{
 			"id":                   42,
 			"jobname":              "deploy-webserver",
 			"timestamp":            "2025-01-01T00:00:00Z",
@@ -153,7 +153,7 @@ func TestAccJobDataSource_APIError(t *testing.T) {
 
 	mock.On("/api/jobs/job", func(w http.ResponseWriter, r *http.Request, _ []byte) {
 		w.WriteHeader(http.StatusForbidden)
-		fmt.Fprint(w, `{"detail":"forbidden"}`)
+		_, _ = fmt.Fprint(w, `{"detail":"forbidden"}`)
 	})
 
 	resource.UnitTest(t, resource.TestCase{
@@ -180,7 +180,7 @@ func TestAccNetworkDataSource_ByName(t *testing.T) {
 
 	mock.On("/api/networking/networks", func(w http.ResponseWriter, r *http.Request, _ []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{
 			"results": []map[string]interface{}{
 				{"id": "net-001", "name": "mgmt", "ipv4_prefix": "10.0.0.0/24", "vlan_id": 100},
 			},
@@ -212,7 +212,7 @@ func TestAccNetworkDataSource_ListAll(t *testing.T) {
 
 	mock.On("/api/networking/networks", func(w http.ResponseWriter, r *http.Request, _ []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{
 			"results": []map[string]interface{}{
 				{"id": "net-001", "name": "mgmt", "ipv4_prefix": "10.0.0.0/24", "vlan_id": 100},
 				{"id": "net-002", "name": "data", "ipv4_prefix": "10.1.0.0/24", "vlan_id": 200},
@@ -243,7 +243,7 @@ func TestAccNetworkDataSource_NotFound(t *testing.T) {
 
 	mock.On("/api/networking/networks", func(w http.ResponseWriter, r *http.Request, _ []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{
 			"results": []map[string]interface{}{},
 		})
 	})
@@ -272,7 +272,7 @@ func TestAccTenantDataSource_Read(t *testing.T) {
 
 	mock.On("/api/tenant", func(w http.ResponseWriter, r *http.Request, _ []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprint(w, `{"id":1,"name":"My Tenant","description":"Main tenant account"}`)
+		_, _ = fmt.Fprint(w, `{"id":1,"name":"My Tenant","description":"Main tenant account"}`)
 	})
 
 	resource.UnitTest(t, resource.TestCase{
@@ -299,7 +299,7 @@ func TestAccTenantDataSource_AlternateIDKeys(t *testing.T) {
 
 	mock.On("/api/tenant", func(w http.ResponseWriter, r *http.Request, _ []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprint(w, `{"pk":99,"name":"Alt Tenant"}`)
+		_, _ = fmt.Fprint(w, `{"pk":99,"name":"Alt Tenant"}`)
 	})
 
 	resource.UnitTest(t, resource.TestCase{
@@ -324,7 +324,7 @@ func TestAccTenantDataSource_APIError(t *testing.T) {
 
 	mock.On("/api/tenant", func(w http.ResponseWriter, r *http.Request, _ []byte) {
 		w.WriteHeader(http.StatusUnauthorized)
-		fmt.Fprint(w, `{"detail":"unauthorized"}`)
+		_, _ = fmt.Fprint(w, `{"detail":"unauthorized"}`)
 	})
 
 	resource.UnitTest(t, resource.TestCase{
@@ -350,7 +350,7 @@ func TestAccZoneDataSource_ByName(t *testing.T) {
 
 	mock.On("/api/networking/zones", func(w http.ResponseWriter, r *http.Request, _ []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{
 			"results": []map[string]interface{}{
 				{"uuid": "zone-uuid-1", "name": "dmz", "description": "DMZ Zone", "adom": "adom1", "transit_vrf": "vrf1"},
 				{"uuid": "zone-uuid-2", "name": "internal", "description": "Internal Zone", "adom": "adom1", "transit_vrf": "vrf2"},
@@ -383,7 +383,7 @@ func TestAccZoneDataSource_ListAll(t *testing.T) {
 
 	mock.On("/api/networking/zones", func(w http.ResponseWriter, r *http.Request, _ []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{
 			"results": []map[string]interface{}{
 				{"uuid": "zone-uuid-1", "name": "dmz", "description": "DMZ", "adom": "a1", "transit_vrf": "v1"},
 				{"uuid": "zone-uuid-2", "name": "internal", "description": "Internal", "adom": "a1", "transit_vrf": "v2"},
@@ -414,7 +414,7 @@ func TestAccZoneDataSource_NotFound(t *testing.T) {
 
 	mock.On("/api/networking/zones", func(w http.ResponseWriter, r *http.Request, _ []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{
 			"results": []map[string]interface{}{},
 		})
 	})
@@ -448,7 +448,7 @@ func TestAccFirewallDataSource_ByName(t *testing.T) {
 
 	mock.On("/api/networking/firewalls", func(w http.ResponseWriter, r *http.Request, body []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{"results": fws})
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{"results": fws})
 	})
 
 	resource.UnitTest(t, resource.TestCase{
@@ -480,7 +480,7 @@ func TestAccFirewallDataSource_ListAll(t *testing.T) {
 
 	mock.On("/api/networking/firewalls", func(w http.ResponseWriter, r *http.Request, body []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{"results": fws})
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{"results": fws})
 	})
 
 	resource.UnitTest(t, resource.TestCase{
@@ -504,7 +504,7 @@ func TestAccFirewallDataSource_NotFound(t *testing.T) {
 
 	mock.On("/api/networking/firewalls", func(w http.ResponseWriter, r *http.Request, body []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{"results": []interface{}{}})
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{"results": []interface{}{}})
 	})
 
 	resource.UnitTest(t, resource.TestCase{
@@ -535,7 +535,7 @@ func TestAccInterfaceDataSource_ByName(t *testing.T) {
 
 	mock.On("/api/virtualization/interface", func(w http.ResponseWriter, r *http.Request, body []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{"results": ifaces})
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{"results": ifaces})
 	})
 
 	resource.UnitTest(t, resource.TestCase{
@@ -568,7 +568,7 @@ func TestAccInterfaceDataSource_ListAll(t *testing.T) {
 
 	mock.On("/api/virtualization/interface", func(w http.ResponseWriter, r *http.Request, body []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{"results": ifaces})
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{"results": ifaces})
 	})
 
 	resource.UnitTest(t, resource.TestCase{
@@ -592,7 +592,7 @@ func TestAccInterfaceDataSource_NotFound(t *testing.T) {
 
 	mock.On("/api/virtualization/interface", func(w http.ResponseWriter, r *http.Request, body []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{"results": []interface{}{}})
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{"results": []interface{}{}})
 	})
 
 	resource.UnitTest(t, resource.TestCase{
@@ -623,7 +623,7 @@ func TestAccIPPoolDataSource_ByName(t *testing.T) {
 
 	mock.On("/api/networking/ippools", func(w http.ResponseWriter, r *http.Request, body []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{"results": pools})
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{"results": pools})
 	})
 
 	resource.UnitTest(t, resource.TestCase{
@@ -655,7 +655,7 @@ func TestAccIPPoolDataSource_ListAll(t *testing.T) {
 
 	mock.On("/api/networking/ippools", func(w http.ResponseWriter, r *http.Request, body []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{"results": pools})
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{"results": pools})
 	})
 
 	resource.UnitTest(t, resource.TestCase{
@@ -679,7 +679,7 @@ func TestAccIPPoolDataSource_NotFound(t *testing.T) {
 
 	mock.On("/api/networking/ippools", func(w http.ResponseWriter, r *http.Request, body []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{"results": []interface{}{}})
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{"results": []interface{}{}})
 	})
 
 	resource.UnitTest(t, resource.TestCase{
@@ -710,7 +710,7 @@ func TestAccNetworkPoolDataSource_ByName(t *testing.T) {
 
 	mock.On("/api/networking/networkpools", func(w http.ResponseWriter, r *http.Request, body []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{"results": pools})
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{"results": pools})
 	})
 
 	resource.UnitTest(t, resource.TestCase{
@@ -743,7 +743,7 @@ func TestAccNetworkPoolDataSource_ListAll(t *testing.T) {
 
 	mock.On("/api/networking/networkpools", func(w http.ResponseWriter, r *http.Request, body []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{"results": pools})
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{"results": pools})
 	})
 
 	resource.UnitTest(t, resource.TestCase{
@@ -768,7 +768,7 @@ func TestAccNetworkPoolDataSource_NotFound(t *testing.T) {
 
 	mock.On("/api/networking/networkpools", func(w http.ResponseWriter, r *http.Request, body []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{"results": []interface{}{}})
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{"results": []interface{}{}})
 	})
 
 	resource.UnitTest(t, resource.TestCase{
@@ -807,7 +807,7 @@ func TestAccVirtualMachineDataSource_ByName(t *testing.T) {
 
 	mock.On("/api/virtualization/virtualmachine", func(w http.ResponseWriter, r *http.Request, body []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{"results": vms})
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{"results": vms})
 	})
 
 	resource.UnitTest(t, resource.TestCase{
@@ -852,7 +852,7 @@ func TestAccVirtualMachineDataSource_ListAll(t *testing.T) {
 
 	mock.On("/api/virtualization/virtualmachine", func(w http.ResponseWriter, r *http.Request, body []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{"results": vms})
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{"results": vms})
 	})
 
 	resource.UnitTest(t, resource.TestCase{
@@ -877,7 +877,7 @@ func TestAccVirtualMachineDataSource_NotFound(t *testing.T) {
 
 	mock.On("/api/virtualization/virtualmachine", func(w http.ResponseWriter, r *http.Request, body []byte) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{"results": []interface{}{}})
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{"results": []interface{}{}})
 	})
 
 	resource.UnitTest(t, resource.TestCase{

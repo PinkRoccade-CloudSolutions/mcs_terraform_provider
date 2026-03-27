@@ -109,7 +109,7 @@ func TestClient_Get_Success(t *testing.T) {
 			t.Errorf("method = %s, want GET", r.Method)
 		}
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprint(w, `{"id":1,"name":"test"}`)
+		_, _ = fmt.Fprint(w, `{"id":1,"name":"test"}`)
 	}))
 	defer srv.Close()
 
@@ -160,7 +160,7 @@ func TestClient_Post_SendsBody(t *testing.T) {
 			t.Errorf("body.Name = %q, want %q", p.Name, "new-item")
 		}
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprint(w, `{"id":42,"name":"new-item"}`)
+		_, _ = fmt.Fprint(w, `{"id":42,"name":"new-item"}`)
 	}))
 	defer srv.Close()
 
@@ -187,7 +187,7 @@ func TestClient_Put_Success(t *testing.T) {
 			t.Errorf("method = %s, want PUT", r.Method)
 		}
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprint(w, `{"id":1,"name":"updated"}`)
+		_, _ = fmt.Fprint(w, `{"id":1,"name":"updated"}`)
 	}))
 	defer srv.Close()
 
@@ -214,7 +214,7 @@ func TestClient_Patch_Success(t *testing.T) {
 			t.Errorf("method = %s, want PATCH", r.Method)
 		}
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprint(w, `{"id":1}`)
+		_, _ = fmt.Fprint(w, `{"id":1}`)
 	}))
 	defer srv.Close()
 
@@ -254,7 +254,7 @@ func TestClient_4xx_ReturnsAPIError(t *testing.T) {
 		t.Run(fmt.Sprintf("status_%d", code), func(t *testing.T) {
 			c, srv := testClient(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 				w.WriteHeader(code)
-				fmt.Fprint(w, `{"detail":"error"}`)
+				_, _ = fmt.Fprint(w, `{"detail":"error"}`)
 			}))
 			defer srv.Close()
 
@@ -300,7 +300,7 @@ func TestClient_429_IsRetried(t *testing.T) {
 			return
 		}
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, `{"ok":true}`)
+		_, _ = fmt.Fprint(w, `{"ok":true}`)
 	}))
 	defer srv.Close()
 
@@ -343,7 +343,7 @@ func TestClient_5xx_ExhaustsRetries(t *testing.T) {
 	c, srv := testClient(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		calls.Add(1)
 		w.WriteHeader(http.StatusBadGateway)
-		fmt.Fprint(w, "bad gateway")
+		_, _ = fmt.Fprint(w, "bad gateway")
 	}))
 	defer srv.Close()
 
@@ -385,7 +385,7 @@ func TestClient_ContextCancelled(t *testing.T) {
 func TestClient_InvalidJSON_ReturnsError(t *testing.T) {
 	c, srv := testClient(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprint(w, `not-json`)
+		_, _ = fmt.Fprint(w, `not-json`)
 	}))
 	defer srv.Close()
 
@@ -419,7 +419,7 @@ func TestClient_EmptyBody_NoDecodeError(t *testing.T) {
 func TestClient_ListAll_SinglePage(t *testing.T) {
 	c, srv := testClient(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprint(w, `{"count":2,"next":null,"previous":null,"results":[{"id":1},{"id":2}]}`)
+		_, _ = fmt.Fprint(w, `{"count":2,"next":null,"previous":null,"results":[{"id":1},{"id":2}]}`)
 	}))
 	defer srv.Close()
 
@@ -436,10 +436,10 @@ func TestClient_ListAll_MultiplePages(t *testing.T) {
 	c, srv := testClient(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		if r.URL.Query().Get("page") == "2" {
-			fmt.Fprint(w, `{"count":3,"next":null,"previous":null,"results":[{"id":3}]}`)
+			_, _ = fmt.Fprint(w, `{"count":3,"next":null,"previous":null,"results":[{"id":3}]}`)
 		} else {
 			nextURL := fmt.Sprintf("http://%s/api/things/?page=2", r.Host)
-			fmt.Fprintf(w, `{"count":3,"next":"%s","previous":null,"results":[{"id":1},{"id":2}]}`, nextURL)
+			_, _ = fmt.Fprintf(w, `{"count":3,"next":"%s","previous":null,"results":[{"id":1},{"id":2}]}`, nextURL)
 		}
 	}))
 	defer srv.Close()
@@ -456,7 +456,7 @@ func TestClient_ListAll_MultiplePages(t *testing.T) {
 func TestClient_ListAll_EmptyResults(t *testing.T) {
 	c, srv := testClient(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprint(w, `{"count":0,"next":null,"previous":null,"results":[]}`)
+		_, _ = fmt.Fprint(w, `{"count":0,"next":null,"previous":null,"results":[]}`)
 	}))
 	defer srv.Close()
 
@@ -472,7 +472,7 @@ func TestClient_ListAll_EmptyResults(t *testing.T) {
 func TestClient_ListAll_APIError(t *testing.T) {
 	c, srv := testClient(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
-		fmt.Fprint(w, `{"detail":"forbidden"}`)
+		_, _ = fmt.Fprint(w, `{"detail":"forbidden"}`)
 	}))
 	defer srv.Close()
 
