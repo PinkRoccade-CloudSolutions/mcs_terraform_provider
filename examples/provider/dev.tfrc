@@ -1,6 +1,6 @@
 provider_installation {
   dev_overrides {
-    "registry.terraform.io/pinkroccade/mcs" = "/Users/fabian.serree/Library/CloudStorage/OneDrive-Pinkroccade/Documenten/Terraform-MCS/terraform-provider-mcs"
+    "registry.terraform.io/pinkroccade/mcs" = "/Users/fabian.serree/Library/CloudStorage/OneDrive-Pinkroccade/Documenten/Terraform-MCS/azure/mcs_terraform_provider"
   }
 
   direct {}
