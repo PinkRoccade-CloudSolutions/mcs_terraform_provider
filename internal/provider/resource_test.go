@@ -1235,7 +1235,7 @@ func TestAccAlertResource_ReadNotFound_RemovesFromState(t *testing.T) {
 				return
 			}
 			w.WriteHeader(http.StatusNotFound)
-			fmt.Fprint(w, `{"detail":"Not found."}`)
+			_, _ = fmt.Fprint(w, `{"detail":"Not found."}`)
 		case http.MethodDelete:
 			w.WriteHeader(http.StatusNoContent)
 		}
