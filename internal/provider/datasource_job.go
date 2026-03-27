@@ -23,9 +23,7 @@ type JobDataSourceModel struct {
 	EndTime            types.String `tfsdk:"endtime"`
 	Message            types.String `tfsdk:"message"`
 	DryRun             types.Bool   `tfsdk:"dryrun"`
-	ContinueOnFailure  types.Bool   `tfsdk:"continue_on_failure"`
-	CreatedAtTimestamp types.String `tfsdk:"created_at_timestamp"`
-	UpdatedAtTimestamp types.String `tfsdk:"updated_at_timestamp"`
+	ContinueOnFailure types.Bool `tfsdk:"continue_on_failure"`
 }
 
 type jobAPIModel struct {
@@ -35,9 +33,7 @@ type jobAPIModel struct {
 	EndTime            string `json:"endtime"`
 	Message            string `json:"message"`
 	DryRun             bool   `json:"dryrun"`
-	ContinueOnFailure  bool   `json:"continue_on_failure"`
-	CreatedAtTimestamp string `json:"created_at_timestamp"`
-	UpdatedAtTimestamp string `json:"updated_at_timestamp"`
+	ContinueOnFailure bool `json:"continue_on_failure"`
 }
 
 func NewJobDataSource() datasource.DataSource {
@@ -70,12 +66,6 @@ func (d *JobDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, re
 				Computed: true,
 			},
 			"continue_on_failure": schema.BoolAttribute{
-				Computed: true,
-			},
-			"created_at_timestamp": schema.StringAttribute{
-				Computed: true,
-			},
-			"updated_at_timestamp": schema.StringAttribute{
 				Computed: true,
 			},
 		},
@@ -116,8 +106,6 @@ func (d *JobDataSource) Read(ctx context.Context, req datasource.ReadRequest, re
 	state.Message = types.StringValue(apiResp.Message)
 	state.DryRun = types.BoolValue(apiResp.DryRun)
 	state.ContinueOnFailure = types.BoolValue(apiResp.ContinueOnFailure)
-	state.CreatedAtTimestamp = types.StringValue(apiResp.CreatedAtTimestamp)
-	state.UpdatedAtTimestamp = types.StringValue(apiResp.UpdatedAtTimestamp)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }

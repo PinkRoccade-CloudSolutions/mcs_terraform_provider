@@ -39,6 +39,11 @@ paths:
         schema:
           type: string
       - in: query
+        name: search
+        schema:
+          type: string
+        description: Search
+      - in: query
         name: service__icontains
         schema:
           type: string
@@ -312,6 +317,11 @@ paths:
         schema:
           type: integer
       - in: query
+        name: search
+        schema:
+          type: string
+        description: Search
+      - in: query
         name: source__icontains
         schema:
           type: string
@@ -508,6 +518,11 @@ paths:
         schema:
           type: boolean
       - in: query
+        name: search
+        schema:
+          type: string
+        description: Search
+      - in: query
         name: source__icontains
         schema:
           type: string
@@ -689,6 +704,11 @@ paths:
         description: Number of results to return per page.
         schema:
           type: integer
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Search
       - in: query
         name: team
         schema:
@@ -2482,6 +2502,7 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/FirewallObjectGroup'
+        required: true
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -3140,6 +3161,430 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/networking/firewalls/:
+    get:
+      operationId: networking_firewalls_list
+      description: API endpoint that allows Network Pools to be viewed or edited.
+      parameters:
+      - in: query
+        name: name__icontains
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Search
+      - in: query
+        name: type
+        schema:
+          type: string
+          enum:
+          - internet
+          - wan
+        description: |-
+          * `internet` - Internet
+          * `wan` - WAN
+      tags:
+      - networking
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFirewallList'
+          description: ''
+  /api/networking/firewalls/{id}/:
+    get:
+      operationId: networking_firewalls_retrieve
+      description: API endpoint that allows Network Pools to be viewed or edited.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this firewall.
+        required: true
+      tags:
+      - networking
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Firewall'
+          description: ''
+  /api/networking/ippools/:
+    get:
+      operationId: networking_ippools_list
+      description: API endpoint that allows IP Pools to be viewed or edited.
+      parameters:
+      - in: query
+        name: name__icontains
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Search
+      tags:
+      - networking
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedIPPoolList'
+          description: ''
+  /api/networking/ippools/{id}/:
+    get:
+      operationId: networking_ippools_retrieve
+      description: API endpoint that allows IP Pools to be viewed or edited.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this ip pool.
+        required: true
+      tags:
+      - networking
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IPPool'
+          description: ''
+  /api/networking/nattranslations/:
+    get:
+      operationId: networking_nattranslations_list
+      description: API endpoint that allows Network Pools to be viewed or edited.
+      parameters:
+      - in: query
+        name: firewall
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: interface__ipaddress__icontains
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: public_ip__ip_address__icontains
+        schema:
+          type: string
+      - in: query
+        name: public_port
+        schema:
+          type: integer
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Search
+      - in: query
+        name: translation_type
+        schema:
+          type: string
+          enum:
+          - one_to_one
+          - port_forward
+        description: |-
+          * `one_to_one` - 1:1 NAT
+          * `port_forward` - Port Forward
+      tags:
+      - networking
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNATTranslationList'
+          description: ''
+    post:
+      operationId: networking_nattranslations_create
+      description: API endpoint that allows Network Pools to be viewed or edited.
+      tags:
+      - networking
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NATTranslation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NATTranslation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NATTranslation'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NATTranslation'
+          description: ''
+  /api/networking/nattranslations/{id}/:
+    get:
+      operationId: networking_nattranslations_retrieve
+      description: API endpoint that allows Network Pools to be viewed or edited.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this nat translation.
+        required: true
+      tags:
+      - networking
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NATTranslation'
+          description: ''
+    put:
+      operationId: networking_nattranslations_update
+      description: API endpoint that allows Network Pools to be viewed or edited.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this nat translation.
+        required: true
+      tags:
+      - networking
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NATTranslation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NATTranslation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NATTranslation'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NATTranslation'
+          description: ''
+    patch:
+      operationId: networking_nattranslations_partial_update
+      description: API endpoint that allows Network Pools to be viewed or edited.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this nat translation.
+        required: true
+      tags:
+      - networking
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedNATTranslation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedNATTranslation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedNATTranslation'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NATTranslation'
+          description: ''
+    delete:
+      operationId: networking_nattranslations_destroy
+      description: API endpoint that allows Network Pools to be viewed or edited.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this nat translation.
+        required: true
+      tags:
+      - networking
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/networking/networkpools/:
+    get:
+      operationId: networking_networkpools_list
+      description: API endpoint that allows Network Pools to be viewed or edited.
+      parameters:
+      - in: query
+        name: name__icontains
+        schema:
+          type: string
+      - in: query
+        name: network__icontains
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Search
+      - in: query
+        name: type
+        schema:
+          type: string
+          enum:
+          - lan
+          - transit
+          - wan
+        description: |-
+          * `lan` - LAN
+          * `wan` - WAN
+          * `transit` - Transit
+      tags:
+      - networking
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNetworkPoolList'
+          description: ''
+  /api/networking/networkpools/{id}/:
+    get:
+      operationId: networking_networkpools_retrieve
+      description: API endpoint that allows Network Pools to be viewed or edited.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this network pool.
+        required: true
+      tags:
+      - networking
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NetworkPool'
+          description: ''
   /api/networking/networks/:
     get:
       operationId: networking_networks_list
@@ -3178,6 +3623,11 @@ paths:
         schema:
           type: integer
       - in: query
+        name: search
+        schema:
+          type: string
+        description: Search
+      - in: query
         name: vlanid__icontains
         schema:
           type: integer
@@ -3194,6 +3644,219 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedNetworkList'
           description: ''
+  /api/networking/publicipaddresss/:
+    get:
+      operationId: networking_publicipaddresss_list
+      description: API endpoint that allows Public IP Addresses to be viewed or edited.
+      parameters:
+      - in: query
+        name: customer
+        schema:
+          type: string
+      - in: query
+        name: description__icontains
+        schema:
+          type: string
+      - in: query
+        name: ip_address__icontains
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Search
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - assigned
+          - available
+          - reserved
+        description: |-
+          * `available` - Available
+          * `assigned` - Assigned
+          * `reserved` - Reserved
+      - in: query
+        name: type
+        schema:
+          type: string
+          enum:
+          - loadbalancer
+          - nat
+          - vip
+        description: |-
+          * `nat` - NAT
+          * `vip` - VIP
+          * `loadbalancer` - Loadbalancer
+      tags:
+      - networking
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPublicIPAddressList'
+          description: ''
+    post:
+      operationId: networking_publicipaddresss_create
+      description: API endpoint that allows Public IP Addresses to be viewed or edited.
+      tags:
+      - networking
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicIPAddress'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PublicIPAddress'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PublicIPAddress'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicIPAddress'
+          description: ''
+  /api/networking/publicipaddresss/{id}/:
+    get:
+      operationId: networking_publicipaddresss_retrieve
+      description: API endpoint that allows Public IP Addresses to be viewed or edited.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this public ip address.
+        required: true
+      tags:
+      - networking
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicIPAddress'
+          description: ''
+    put:
+      operationId: networking_publicipaddresss_update
+      description: API endpoint that allows Public IP Addresses to be viewed or edited.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this public ip address.
+        required: true
+      tags:
+      - networking
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicIPAddress'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PublicIPAddress'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PublicIPAddress'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicIPAddress'
+          description: ''
+    patch:
+      operationId: networking_publicipaddresss_partial_update
+      description: API endpoint that allows Public IP Addresses to be viewed or edited.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this public ip address.
+        required: true
+      tags:
+      - networking
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPublicIPAddress'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPublicIPAddress'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPublicIPAddress'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicIPAddress'
+          description: ''
+    delete:
+      operationId: networking_publicipaddresss_destroy
+      description: API endpoint that allows Public IP Addresses to be viewed or edited.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this public ip address.
+        required: true
+      tags:
+      - networking
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
   /api/networking/zones/:
     get:
       operationId: networking_zones_list
@@ -3842,76 +4505,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Disk'
           description: ''
-    put:
-      operationId: virtualization_disk_update
-      description: API endpoint that allows Virtualmachine Disks to be viewed or edited.
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this disk.
-        required: true
-      tags:
-      - virtualization
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Disk'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Disk'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/Disk'
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - tokenAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Disk'
-          description: ''
-    patch:
-      operationId: virtualization_disk_partial_update
-      description: API endpoint that allows Virtualmachine Disks to be viewed or edited.
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this disk.
-        required: true
-      tags:
-      - virtualization
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchedDisk'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/PatchedDisk'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/PatchedDisk'
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - tokenAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Disk'
-          description: ''
   /api/virtualization/interface/:
     get:
       operationId: virtualization_interface_list
@@ -3969,78 +4562,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Interface'
           description: ''
-    put:
-      operationId: virtualization_interface_update
-      description: API endpoint that allows RVirtualmachine Interfaces to be viewed
-        or edited.
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this interface.
-        required: true
-      tags:
-      - virtualization
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Interface'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Interface'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/Interface'
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - tokenAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Interface'
-          description: ''
-    patch:
-      operationId: virtualization_interface_partial_update
-      description: API endpoint that allows RVirtualmachine Interfaces to be viewed
-        or edited.
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this interface.
-        required: true
-      tags:
-      - virtualization
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchedInterface'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/PatchedInterface'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/PatchedInterface'
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - tokenAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Interface'
-          description: ''
   /api/virtualization/virtualdatacenter/:
     get:
       operationId: virtualization_virtualdatacenter_list
@@ -4079,34 +4600,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedVirtualDatacenterList'
           description: ''
-    post:
-      operationId: virtualization_virtualdatacenter_create
-      description: API endpoint that allows Virtualmachines to be viewed or edited.
-      tags:
-      - virtualization
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/VirtualDatacenter'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/VirtualDatacenter'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/VirtualDatacenter'
-        required: true
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - tokenAuth: []
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VirtualDatacenter'
-          description: ''
   /api/virtualization/virtualdatacenter/{id}/:
     get:
       operationId: virtualization_virtualdatacenter_retrieve
@@ -4132,97 +4625,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/VirtualDatacenter'
           description: ''
-    put:
-      operationId: virtualization_virtualdatacenter_update
-      description: API endpoint that allows Virtualmachines to be viewed or edited.
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this virtual datacenter.
-        required: true
-      tags:
-      - virtualization
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/VirtualDatacenter'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/VirtualDatacenter'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/VirtualDatacenter'
-        required: true
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - tokenAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VirtualDatacenter'
-          description: ''
-    patch:
-      operationId: virtualization_virtualdatacenter_partial_update
-      description: API endpoint that allows Virtualmachines to be viewed or edited.
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this virtual datacenter.
-        required: true
-      tags:
-      - virtualization
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchedVirtualDatacenter'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/PatchedVirtualDatacenter'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/PatchedVirtualDatacenter'
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - tokenAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VirtualDatacenter'
-          description: ''
-    delete:
-      operationId: virtualization_virtualdatacenter_destroy
-      description: API endpoint that allows Virtualmachines to be viewed or edited.
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this virtual datacenter.
-        required: true
-      tags:
-      - virtualization
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - tokenAuth: []
-      responses:
-        '204':
-          description: No response body
   /api/virtualization/virtualmachine/:
     get:
       operationId: virtualization_virtualmachine_list
@@ -4284,76 +4686,6 @@ paths:
         required: true
       tags:
       - virtualization
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - tokenAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VirtualMachine'
-          description: ''
-    put:
-      operationId: virtualization_virtualmachine_update
-      description: API endpoint that allows Virtualmachines to be viewed or edited.
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this virtual machine.
-        required: true
-      tags:
-      - virtualization
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/VirtualMachine'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/VirtualMachine'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/VirtualMachine'
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - tokenAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VirtualMachine'
-          description: ''
-    patch:
-      operationId: virtualization_virtualmachine_partial_update
-      description: API endpoint that allows Virtualmachines to be viewed or edited.
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-          format: uuid
-        description: A UUID string identifying this virtual machine.
-        required: true
-      tags:
-      - virtualization
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchedVirtualMachine'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/PatchedVirtualMachine'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/PatchedVirtualMachine'
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -4875,8 +5207,6 @@ components:
           $ref: '#/components/schemas/Ipv46Enum'
         port:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
         type:
           $ref: '#/components/schemas/CsvServerTypeEnum'
         policies:
@@ -5100,8 +5430,6 @@ components:
           readOnly: true
         comp_errors:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
       required:
       - customer
       - id
@@ -5147,6 +5475,26 @@ components:
       - labels
       - occurrence
       - timestamp
+    Firewall:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 4096
+        customer:
+          type: string
+        type:
+          $ref: '#/components/schemas/FirewallTypeEnum'
+      required:
+      - customer
+      - id
     FirewallCommit:
       type: object
       properties:
@@ -5213,13 +5561,13 @@ components:
     FirewallObjectGroup:
       type: object
       properties:
-        name:
-          type: string
-          maxLength: 100
         uuid:
           type: string
           readOnly: true
           maxLength: 255
+        name:
+          type: string
+          maxLength: 100
         comment:
           type: string
           maxLength: 2048
@@ -5231,6 +5579,7 @@ components:
           type: boolean
           readOnly: true
       required:
+      - name
       - used
       - uuid
     FirewallRequest:
@@ -5417,6 +5766,14 @@ components:
       required:
       - used
       - uuid
+    FirewallTypeEnum:
+      enum:
+      - internet
+      - wan
+      type: string
+      description: |-
+        * `internet` - Internet
+        * `wan` - WAN
     HealthmonitorEnum:
       enum:
       - 'YES'
@@ -5425,6 +5782,26 @@ components:
       description: |-
         * `YES` - YES
         * `NO` - NO
+    IPPool:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        subnet:
+          type: string
+          maxLength: 50
+        customer:
+          type: string
+          nullable: true
+      required:
+      - id
+      - name
+      - subnet
     Interface:
       type: object
       properties:
@@ -5449,12 +5826,16 @@ components:
           type: string
           readOnly: true
           default: ''
+        vm_name:
+          type: string
+          readOnly: true
       required:
       - id
       - ipaddress
       - ipv6address
       - macAddress
       - name
+      - vm_name
     Ipv46Enum:
       enum:
       - request-public
@@ -5500,8 +5881,6 @@ components:
           type: string
         parent:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
           description: ID of parent job, can be used to chain multiple jobs.
         dryrun:
           type: boolean
@@ -5632,16 +6011,12 @@ components:
           maxLength: 255
         port:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
           default: 0
         servername:
           type: string
           maxLength: 255
         weight:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
           description: Alter the weight to change which server is used first.
         state:
           $ref: '#/components/schemas/LbServicegroupMemberStateEnum'
@@ -5701,8 +6076,6 @@ components:
           maxLength: 255
         port:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
           description: Leave default if used as non routed loadbalancer.
         type:
           $ref: '#/components/schemas/LbvServerTypeEnum'
@@ -5756,16 +6129,10 @@ components:
           $ref: '#/components/schemas/MonitorTypeEnum'
         interval:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
         resptimeout:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
         downtime:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
         respcode:
           oneOf:
           - $ref: '#/components/schemas/RespcodeEnum'
@@ -5849,6 +6216,73 @@ components:
         * `ssl_bridge` - SSL_BRIDGE
         * `tcp` - TCP
         * `udp` - UDP
+    NATTranslation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        public_ip:
+          type: string
+          format: uuid
+        interface:
+          type: string
+          format: uuid
+          title: Private ip
+        firewall:
+          type: string
+          format: uuid
+        translation:
+          type: string
+          readOnly: true
+        private_ip:
+          type: string
+          readOnly: true
+        translation_type:
+          allOf:
+          - $ref: '#/components/schemas/TranslationTypeEnum'
+          readOnly: true
+        public_port:
+          type: integer
+          nullable: true
+        private_port:
+          type: integer
+          nullable: true
+        protocol:
+          oneOf:
+          - $ref: '#/components/schemas/ProtocolEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        customer:
+          type: string
+        description:
+          type: string
+          maxLength: 255
+        state:
+          $ref: '#/components/schemas/NATTranslationStateEnum'
+        enabled:
+          type: boolean
+      required:
+      - customer
+      - firewall
+      - id
+      - interface
+      - private_ip
+      - public_ip
+      - translation
+      - translation_type
+    NATTranslationStateEnum:
+      enum:
+      - synced
+      - unsynced
+      - error
+      - deleted
+      type: string
+      description: |-
+        * `synced` - SYNCED
+        * `unsynced` - UNSYNCED
+        * `error` - Error
+        * `deleted` - DELETED
     Network:
       type: object
       properties:
@@ -5864,10 +6298,47 @@ components:
           maxLength: 4096
         vlanid:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
       required:
       - id
+    NetworkPool:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          description: Specify a name for this network pool.
+          maxLength: 255
+        network:
+          type: string
+          description: 'Specify the pool network in the format: 10.0.0.0/8'
+          maxLength: 255
+        description:
+          type: string
+          description: Optional description to help the end user decide on the best
+            pool.
+          maxLength: 2048
+        type:
+          oneOf:
+          - $ref: '#/components/schemas/NetworkPoolTypeEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        enabled:
+          type: boolean
+          description: Make the pool usable by end users.
+      required:
+      - id
+    NetworkPoolTypeEnum:
+      enum:
+      - lan
+      - wan
+      - transit
+      type: string
+      description: |-
+        * `lan` - LAN
+        * `wan` - WAN
+        * `transit` - Transit
     PaginatedAlertList:
       type: object
       required:
@@ -6121,6 +6592,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Domain'
+    PaginatedFirewallList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Firewall'
     PaginatedFirewallRequestList:
       type: object
       required:
@@ -6144,6 +6638,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FirewallRequest'
+    PaginatedIPPoolList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/IPPool'
     PaginatedInterfaceList:
       type: object
       required:
@@ -6305,6 +6822,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Monitor'
+    PaginatedNATTranslationList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/NATTranslation'
     PaginatedNetworkList:
       type: object
       required:
@@ -6328,6 +6868,52 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Network'
+    PaginatedNetworkPoolList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/NetworkPool'
+    PaginatedPublicIPAddressList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicIPAddress'
     PaginatedSitetositeList:
       type: object
       required:
@@ -6613,8 +7199,6 @@ components:
           $ref: '#/components/schemas/Ipv46Enum'
         port:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
         type:
           $ref: '#/components/schemas/CsvServerTypeEnum'
         policies:
@@ -6721,28 +7305,6 @@ components:
         raw:
           nullable: true
           default: {}
-    PatchedDisk:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          readOnly: true
-        name:
-          type: string
-          readOnly: true
-        size:
-          type: integer
-          maximum: 512
-          minimum: 0
-          description: Size in GB
-        path:
-          type: string
-          readOnly: true
-        type:
-          allOf:
-          - $ref: '#/components/schemas/DiskTypeEnum'
-          readOnly: true
     PatchedDomainDbl:
       type: object
       description: Adds nested create feature
@@ -6777,30 +7339,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Label'
-    PatchedInterface:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          readOnly: true
-        name:
-          type: string
-          readOnly: true
-        ipaddress:
-          type: string
-          readOnly: true
-        ipv6address:
-          type: string
-          readOnly: true
-        network:
-          type: string
-          format: uuid
-          nullable: true
-        macAddress:
-          type: string
-          readOnly: true
-          default: ''
     PatchedLbServicegroup:
       type: object
       properties:
@@ -6846,16 +7384,12 @@ components:
           maxLength: 255
         port:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
           default: 0
         servername:
           type: string
           maxLength: 255
         weight:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
           description: Alter the weight to change which server is used first.
         state:
           $ref: '#/components/schemas/LbServicegroupMemberStateEnum'
@@ -6881,8 +7415,6 @@ components:
           maxLength: 255
         port:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
           description: Leave default if used as non routed loadbalancer.
         type:
           $ref: '#/components/schemas/LbvServerTypeEnum'
@@ -6918,16 +7450,10 @@ components:
           $ref: '#/components/schemas/MonitorTypeEnum'
         interval:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
         resptimeout:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
         downtime:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
         respcode:
           oneOf:
           - $ref: '#/components/schemas/RespcodeEnum'
@@ -6986,6 +7512,74 @@ components:
         comment:
           type: string
           description: 'Feel free to add some comments to the monitor for administration. '
+    PatchedNATTranslation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        public_ip:
+          type: string
+          format: uuid
+        interface:
+          type: string
+          format: uuid
+          title: Private ip
+        firewall:
+          type: string
+          format: uuid
+        translation:
+          type: string
+          readOnly: true
+        private_ip:
+          type: string
+          readOnly: true
+        translation_type:
+          allOf:
+          - $ref: '#/components/schemas/TranslationTypeEnum'
+          readOnly: true
+        public_port:
+          type: integer
+          nullable: true
+        private_port:
+          type: integer
+          nullable: true
+        protocol:
+          oneOf:
+          - $ref: '#/components/schemas/ProtocolEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        customer:
+          type: string
+        description:
+          type: string
+          maxLength: 255
+        state:
+          $ref: '#/components/schemas/NATTranslationStateEnum'
+        enabled:
+          type: boolean
+    PatchedPublicIPAddress:
+      type: object
+      properties:
+        ip_address:
+          type: string
+          readOnly: true
+        pool:
+          type: string
+          format: uuid
+          nullable: true
+        description:
+          type: string
+          maxLength: 255
+        status:
+          $ref: '#/components/schemas/PublicIPAddressStatusEnum'
+        type:
+          oneOf:
+          - $ref: '#/components/schemas/PublicIPAddressTypeEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        customer:
+          type: string
+          nullable: true
     PatchedSitetosite:
       type: object
       properties:
@@ -7017,8 +7611,6 @@ components:
           maxLength: 255
         resets:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
         last_check:
           type: string
           format: date-time
@@ -7051,63 +7643,58 @@ components:
           type: array
           items:
             type: integer
-    PatchedVirtualDatacenter:
+    ProtocolEnum:
+      enum:
+      - tcp
+      - udp
+      type: string
+      description: |-
+        * `tcp` - TCP
+        * `udp` - UDP
+    PublicIPAddress:
       type: object
       properties:
-        id:
+        ip_address:
+          type: string
+          readOnly: true
+        pool:
           type: string
           format: uuid
-          readOnly: true
-        name:
+          nullable: true
+        description:
           type: string
-          description: Name of the VDC, maximum of 255 characters is supported.
           maxLength: 255
-        cluster:
+        status:
+          $ref: '#/components/schemas/PublicIPAddressStatusEnum'
+        type:
+          oneOf:
+          - $ref: '#/components/schemas/PublicIPAddressTypeEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        customer:
           type: string
-          format: uuid
-          description: Chose the cluster that is used by the VDC to deploy VM's.
-    PatchedVirtualMachine:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          readOnly: true
-        name:
-          type: string
-          readOnly: true
-        cpu:
-          type: integer
-          maximum: 32
-          minimum: 0
-        memory:
-          type: integer
-          maximum: 131072
-          minimum: 0
-          description: Memory size in MB
-        disks:
-          type: array
-          items:
-            $ref: '#/components/schemas/Disk'
-        interfaces:
-          type: array
-          items:
-            $ref: '#/components/schemas/Interface'
-        os:
-          type: string
-          readOnly: true
-        restart:
-          type: string
-          format: uri
-          readOnly: true
-        startup:
-          type: string
-          format: uri
-          readOnly: true
-        shutdown:
-          type: string
-          format: uri
-          readOnly: true
+          nullable: true
+      required:
+      - ip_address
+    PublicIPAddressStatusEnum:
+      enum:
+      - available
+      - assigned
+      - reserved
+      type: string
+      description: |-
+        * `available` - Available
+        * `assigned` - Assigned
+        * `reserved` - Reserved
+    PublicIPAddressTypeEnum:
+      enum:
+      - nat
+      - vip
+      - loadbalancer
+      type: string
+      description: |-
+        * `nat` - NAT
+        * `vip` - VIP
+        * `loadbalancer` - Loadbalancer
     RespcodeEnum:
       enum:
       - '["200"]'
@@ -7214,8 +7801,6 @@ components:
           maxLength: 255
         resets:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
         last_check:
           type: string
           format: date-time
@@ -7263,6 +7848,14 @@ components:
         status:
           type: string
           maxLength: 255
+    TranslationTypeEnum:
+      enum:
+      - one_to_one
+      - port_forward
+      type: string
+      description: |-
+        * `one_to_one` - 1:1 NAT
+        * `port_forward` - Port Forward
     User:
       type: object
       properties:

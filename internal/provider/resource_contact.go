@@ -26,10 +26,8 @@ type ContactResourceModel struct {
 	Lastname           types.String `tfsdk:"lastname"`
 	Email              types.String `tfsdk:"email"`
 	Phone              types.String `tfsdk:"phone"`
-	Address            types.String `tfsdk:"address"`
-	Tenant             types.Int64  `tfsdk:"tenant"`
-	CreatedAtTimestamp types.String `tfsdk:"created_at_timestamp"`
-	UpdatedAtTimestamp types.String `tfsdk:"updated_at_timestamp"`
+	Address types.String `tfsdk:"address"`
+	Tenant  types.Int64  `tfsdk:"tenant"`
 }
 
 type contactAPIModel struct {
@@ -39,10 +37,8 @@ type contactAPIModel struct {
 	Lastname           string `json:"lastname,omitempty"`
 	Email              string `json:"email,omitempty"`
 	Phone              string `json:"phone,omitempty"`
-	Address            string `json:"address,omitempty"`
-	Tenant             int64  `json:"tenant"`
-	CreatedAtTimestamp string `json:"created_at_timestamp,omitempty"`
-	UpdatedAtTimestamp string `json:"updated_at_timestamp,omitempty"`
+	Address string `json:"address,omitempty"`
+	Tenant  int64  `json:"tenant"`
 }
 
 func NewContactResource() resource.Resource {
@@ -80,14 +76,6 @@ func (r *ContactResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 			},
 			"tenant": schema.Int64Attribute{
 				Required: true,
-			},
-			"created_at_timestamp": schema.StringAttribute{
-				Computed:      true,
-				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
-			},
-			"updated_at_timestamp": schema.StringAttribute{
-				Computed:      true,
-				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
 		},
 	}
@@ -131,8 +119,6 @@ func (r *ContactResource) Create(ctx context.Context, req resource.CreateRequest
 	}
 
 	plan.Id = types.StringValue(strconv.Itoa(apiResp.Id))
-	plan.CreatedAtTimestamp = types.StringValue(apiResp.CreatedAtTimestamp)
-	plan.UpdatedAtTimestamp = types.StringValue(apiResp.UpdatedAtTimestamp)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
@@ -163,8 +149,6 @@ func (r *ContactResource) Read(ctx context.Context, req resource.ReadRequest, re
 	state.Phone = types.StringValue(apiResp.Phone)
 	state.Address = types.StringValue(apiResp.Address)
 	state.Tenant = types.Int64Value(apiResp.Tenant)
-	state.CreatedAtTimestamp = types.StringValue(apiResp.CreatedAtTimestamp)
-	state.UpdatedAtTimestamp = types.StringValue(apiResp.UpdatedAtTimestamp)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
@@ -192,9 +176,6 @@ func (r *ContactResource) Update(ctx context.Context, req resource.UpdateRequest
 		resp.Diagnostics.AddError("Error updating contact", err.Error())
 		return
 	}
-
-	plan.CreatedAtTimestamp = types.StringValue(apiResp.CreatedAtTimestamp)
-	plan.UpdatedAtTimestamp = types.StringValue(apiResp.UpdatedAtTimestamp)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }

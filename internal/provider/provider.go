@@ -112,6 +112,8 @@ func (p *MCSProvider) Resources(_ context.Context) []func() resource.Resource {
 		NewLbServicegroupMemberResource,
 		NewLbvServerResource,
 		NewMonitorIPResource,
+		NewNATTranslationResource,
+		NewPublicIPAddressResource,
 		NewSiteToSiteVPNResource,
 		NewVirtualDatacenterResource,
 	}
@@ -120,9 +122,14 @@ func (p *MCSProvider) Resources(_ context.Context) []func() resource.Resource {
 func (p *MCSProvider) DataSources(_ context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		NewDomainDataSource,
+		NewFirewallDataSource,
+		NewInterfaceDataSource,
+		NewIPPoolDataSource,
 		NewJobDataSource,
 		NewNetworkDataSource,
+		NewNetworkPoolDataSource,
 		NewTenantDataSource,
+		NewVirtualMachineDataSource,
 		NewZoneDataSource,
 	}
 }

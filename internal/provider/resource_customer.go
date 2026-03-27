@@ -24,10 +24,8 @@ type CustomerResourceModel struct {
 	ContractId         types.String `tfsdk:"contractid"`
 	Tenant             types.Int64  `tfsdk:"tenant"`
 	Sdm                types.Int64  `tfsdk:"sdm"`
-	TechContacts       types.List   `tfsdk:"tech_contacts"`
-	AdminContacts      types.List   `tfsdk:"admin_contacts"`
-	CreatedAtTimestamp types.String `tfsdk:"created_at_timestamp"`
-	UpdatedAtTimestamp types.String `tfsdk:"updated_at_timestamp"`
+	TechContacts  types.List `tfsdk:"tech_contacts"`
+	AdminContacts types.List `tfsdk:"admin_contacts"`
 }
 
 type customerAPIModel struct {
@@ -36,10 +34,8 @@ type customerAPIModel struct {
 	ContractId         string  `json:"contractid,omitempty"`
 	Tenant             int64   `json:"tenant"`
 	Sdm                int64   `json:"sdm,omitempty"`
-	TechContacts       []int64 `json:"tech_contacts"`
-	AdminContacts      []int64 `json:"admin_contacts"`
-	CreatedAtTimestamp string  `json:"created_at_timestamp,omitempty"`
-	UpdatedAtTimestamp string  `json:"updated_at_timestamp,omitempty"`
+	TechContacts  []int64 `json:"tech_contacts"`
+	AdminContacts []int64 `json:"admin_contacts"`
 }
 
 func NewCustomerResource() resource.Resource {
@@ -76,14 +72,6 @@ func (r *CustomerResource) Schema(_ context.Context, _ resource.SchemaRequest, r
 			"admin_contacts": schema.ListAttribute{
 				Optional:    true,
 				ElementType: types.Int64Type,
-			},
-			"created_at_timestamp": schema.StringAttribute{
-				Computed:      true,
-				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
-			},
-			"updated_at_timestamp": schema.StringAttribute{
-				Computed:      true,
-				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
 		},
 	}
@@ -137,8 +125,6 @@ func (r *CustomerResource) Create(ctx context.Context, req resource.CreateReques
 	}
 
 	plan.Id = types.StringValue(apiResp.Id)
-	plan.CreatedAtTimestamp = types.StringValue(apiResp.CreatedAtTimestamp)
-	plan.UpdatedAtTimestamp = types.StringValue(apiResp.UpdatedAtTimestamp)
 
 	techList, diags := types.ListValueFrom(ctx, types.Int64Type, apiResp.TechContacts)
 	resp.Diagnostics.Append(diags...)
@@ -174,8 +160,6 @@ func (r *CustomerResource) Read(ctx context.Context, req resource.ReadRequest, r
 	state.ContractId = types.StringValue(apiResp.ContractId)
 	state.Tenant = types.Int64Value(apiResp.Tenant)
 	state.Sdm = types.Int64Value(apiResp.Sdm)
-	state.CreatedAtTimestamp = types.StringValue(apiResp.CreatedAtTimestamp)
-	state.UpdatedAtTimestamp = types.StringValue(apiResp.UpdatedAtTimestamp)
 
 	techList, diags := types.ListValueFrom(ctx, types.Int64Type, apiResp.TechContacts)
 	resp.Diagnostics.Append(diags...)
@@ -221,9 +205,6 @@ func (r *CustomerResource) Update(ctx context.Context, req resource.UpdateReques
 		resp.Diagnostics.AddError("Error updating customer", err.Error())
 		return
 	}
-
-	plan.CreatedAtTimestamp = types.StringValue(apiResp.CreatedAtTimestamp)
-	plan.UpdatedAtTimestamp = types.StringValue(apiResp.UpdatedAtTimestamp)
 
 	techList, diags := types.ListValueFrom(ctx, types.Int64Type, apiResp.TechContacts)
 	resp.Diagnostics.Append(diags...)

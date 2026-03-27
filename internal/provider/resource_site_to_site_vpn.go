@@ -27,9 +27,7 @@ type SiteToSiteVPNResourceModel struct {
 	LastStatus         types.String `tfsdk:"last_status"`
 	Resets             types.Int64  `tfsdk:"resets"`
 	LastCheck          types.String `tfsdk:"last_check"`
-	LastReset          types.String `tfsdk:"last_reset"`
-	CreatedAtTimestamp types.String `tfsdk:"created_at_timestamp"`
-	UpdatedAtTimestamp types.String `tfsdk:"updated_at_timestamp"`
+	LastReset types.String `tfsdk:"last_reset"`
 }
 
 type siteToSiteVPNAPIModel struct {
@@ -40,9 +38,7 @@ type siteToSiteVPNAPIModel struct {
 	LastStatus         string `json:"last_status,omitempty"`
 	Resets             int64  `json:"resets,omitempty"`
 	LastCheck          string `json:"last_check,omitempty"`
-	LastReset          string `json:"last_reset,omitempty"`
-	CreatedAtTimestamp string `json:"created_at_timestamp,omitempty"`
-	UpdatedAtTimestamp string `json:"updated_at_timestamp,omitempty"`
+	LastReset string `json:"last_reset,omitempty"`
 }
 
 func NewSiteToSiteVPNResource() resource.Resource {
@@ -81,14 +77,6 @@ func (r *SiteToSiteVPNResource) Schema(_ context.Context, _ resource.SchemaReque
 			},
 			"last_reset": schema.StringAttribute{
 				Optional: true,
-			},
-			"created_at_timestamp": schema.StringAttribute{
-				Computed:      true,
-				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
-			},
-			"updated_at_timestamp": schema.StringAttribute{
-				Computed:      true,
-				PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
 			},
 		},
 	}
@@ -132,8 +120,6 @@ func (r *SiteToSiteVPNResource) Create(ctx context.Context, req resource.CreateR
 
 	plan.Id = types.StringValue(strconv.Itoa(apiResp.Id))
 	plan.Uuid = types.StringValue(apiResp.Uuid)
-	plan.CreatedAtTimestamp = types.StringValue(apiResp.CreatedAtTimestamp)
-	plan.UpdatedAtTimestamp = types.StringValue(apiResp.UpdatedAtTimestamp)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
@@ -164,8 +150,6 @@ func (r *SiteToSiteVPNResource) Read(ctx context.Context, req resource.ReadReque
 	state.Resets = types.Int64Value(apiResp.Resets)
 	state.LastCheck = types.StringValue(apiResp.LastCheck)
 	state.LastReset = types.StringValue(apiResp.LastReset)
-	state.CreatedAtTimestamp = types.StringValue(apiResp.CreatedAtTimestamp)
-	state.UpdatedAtTimestamp = types.StringValue(apiResp.UpdatedAtTimestamp)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
@@ -194,8 +178,6 @@ func (r *SiteToSiteVPNResource) Update(ctx context.Context, req resource.UpdateR
 	}
 
 	plan.Uuid = types.StringValue(apiResp.Uuid)
-	plan.CreatedAtTimestamp = types.StringValue(apiResp.CreatedAtTimestamp)
-	plan.UpdatedAtTimestamp = types.StringValue(apiResp.UpdatedAtTimestamp)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
