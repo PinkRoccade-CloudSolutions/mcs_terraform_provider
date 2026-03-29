@@ -4,12 +4,12 @@ import (
 	"context"
 	"os"
 
+	"github.com/PinkRoccade-CloudSolutions/terraform-provider-mcs/internal/apiclient"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/PinkRoccade-CloudSolutions/terraform-provider-mcs/internal/apiclient"
 )
 
 var _ provider.Provider = &MCSProvider{}
@@ -93,7 +93,6 @@ func (p *MCSProvider) Configure(ctx context.Context, req provider.ConfigureReque
 
 func (p *MCSProvider) Resources(_ context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
-		NewAlertResource,
 		NewCertificateResource,
 		NewContactResource,
 		NewCsActionResource,
@@ -121,15 +120,32 @@ func (p *MCSProvider) Resources(_ context.Context) []func() resource.Resource {
 
 func (p *MCSProvider) DataSources(_ context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
+		NewCertificateDataSource,
+		NewContactDataSource,
+		NewCsActionDataSource,
+		NewCsPolicyDataSource,
+		NewCsvServerDataSource,
+		NewCustomerDataSource,
+		NewDblDataSource,
+		NewDiskDataSource,
 		NewDomainDataSource,
+		NewDomainDblDataSource,
 		NewFirewallDataSource,
 		NewInterfaceDataSource,
 		NewIPPoolDataSource,
 		NewJobDataSource,
+		NewLbMonitorDataSource,
+		NewLbServicegroupDataSource,
+		NewLbServicegroupMemberDataSource,
+		NewLbvServerDataSource,
+		NewMonitorIPDataSource,
+		NewNATTranslationDataSource,
 		NewNetworkDataSource,
 		NewNetworkPoolDataSource,
 		NewPublicIPAddressDataSource,
+		NewSiteToSiteVPNDataSource,
 		NewTenantDataSource,
+		NewVirtualDatacenterDataSource,
 		NewVirtualMachineDataSource,
 		NewZoneDataSource,
 	}

@@ -2,79 +2,11 @@ package provider
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
-
-// ---------------------------------------------------------------------------
-// mcs_alert
-// ---------------------------------------------------------------------------
-
-func TestAccAlertResource_CRUD(t *testing.T) {
-	mock := newMockAPIServer()
-	defer mock.Close()
-
-	mock.On("/api/alerts/alert", func(w http.ResponseWriter, r *http.Request, body []byte) {
-		w.Header().Set("Content-Type", "application/json")
-		switch r.Method {
-		case http.MethodPost:
-			var req map[string]interface{}
-			_ = json.Unmarshal(body, &req)
-			resp := map[string]interface{}{
-				"id": 1, "resource": req["resource"], "event": req["event"],
-				"createtime": "2025-01-01T00:00:00Z", "lastupdate": "2025-01-01T00:00:00Z",
-				"duplicate_count": 0, "timeout": 300,
-			}
-			if v, ok := req["severity"]; ok {
-				resp["severity"] = v
-			}
-			w.WriteHeader(http.StatusCreated)
-			_ = json.NewEncoder(w).Encode(resp)
-		case http.MethodGet:
-			_ = json.NewEncoder(w).Encode(map[string]interface{}{
-				"id": 1, "resource": "web-server", "event": "cpu_high",
-				"createtime": "2025-01-01T00:00:00Z", "lastupdate": "2025-01-01T00:00:00Z",
-				"duplicate_count": 0, "timeout": 300, "severity": "major",
-			})
-		case http.MethodPut:
-			var req map[string]interface{}
-			_ = json.Unmarshal(body, &req)
-			resp := map[string]interface{}{
-				"id": 1, "resource": req["resource"], "event": req["event"],
-				"createtime": "2025-01-01T00:00:00Z", "lastupdate": "2025-01-01T00:00:00Z",
-				"duplicate_count": 0, "timeout": 300,
-			}
-			if v, ok := req["severity"]; ok {
-				resp["severity"] = v
-			}
-			_ = json.NewEncoder(w).Encode(resp)
-		case http.MethodDelete:
-			w.WriteHeader(http.StatusNoContent)
-		}
-	})
-
-	resource.UnitTest(t, resource.TestCase{
-		ProtoV6ProviderFactories: testProtoV6ProviderFactories(mock.URL()),
-		Steps: []resource.TestStep{
-			{
-				Config: providerConfigBlock(mock.URL()) + `
-resource "mcs_alert" "test" {
-  resource = "web-server"
-  event    = "cpu_high"
-  severity = "major"
-}`,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("mcs_alert.test", "resource", "web-server"),
-					resource.TestCheckResourceAttr("mcs_alert.test", "event", "cpu_high"),
-					resource.TestCheckResourceAttr("mcs_alert.test", "id", "1"),
-				),
-			},
-		},
-	})
-}
 
 // ---------------------------------------------------------------------------
 // mcs_certificate
@@ -1199,56 +1131,6 @@ resource "mcs_virtual_datacenter" "test" {
 					resource.TestCheckResourceAttr("mcs_virtual_datacenter.test", "id", "vdc-001"),
 					resource.TestCheckResourceAttr("mcs_virtual_datacenter.test", "name", "prod-dc"),
 				),
-			},
-		},
-	})
-}
-
-// ---------------------------------------------------------------------------
-// Resource not found → removal from state
-// ---------------------------------------------------------------------------
-
-func TestAccAlertResource_ReadNotFound_RemovesFromState(t *testing.T) {
-	mock := newMockAPIServer()
-	defer mock.Close()
-
-	callCount := 0
-	mock.On("/api/alerts/alert", func(w http.ResponseWriter, r *http.Request, body []byte) {
-		w.Header().Set("Content-Type", "application/json")
-		switch r.Method {
-		case http.MethodPost:
-			callCount++
-			_ = json.NewEncoder(w).Encode(map[string]interface{}{
-				"id": callCount, "resource": "web", "event": "test",
-				"createtime": "2025-01-01T00:00:00Z", "lastupdate": "2025-01-01T00:00:00Z",
-				"duplicate_count": 0, "timeout": 300,
-			})
-		case http.MethodGet:
-			if callCount > 1 {
-				_ = json.NewEncoder(w).Encode(map[string]interface{}{
-					"id": callCount, "resource": "web", "event": "test",
-					"createtime": "2025-01-01T00:00:00Z", "lastupdate": "2025-01-01T00:00:00Z",
-					"duplicate_count": 0, "timeout": 300,
-				})
-				return
-			}
-			w.WriteHeader(http.StatusNotFound)
-			_, _ = fmt.Fprint(w, `{"detail":"Not found."}`)
-		case http.MethodDelete:
-			w.WriteHeader(http.StatusNoContent)
-		}
-	})
-
-	resource.UnitTest(t, resource.TestCase{
-		ProtoV6ProviderFactories: testProtoV6ProviderFactories(mock.URL()),
-		Steps: []resource.TestStep{
-			{
-				Config: providerConfigBlock(mock.URL()) + `
-resource "mcs_alert" "test" {
-  resource = "web"
-  event    = "test"
-}`,
-				ExpectNonEmptyPlan: true,
 			},
 		},
 	})

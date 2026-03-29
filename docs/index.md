@@ -1,6 +1,6 @@
 # MCS Terraform Provider
 
-The MCS (Mijn Cloud Solutions) Terraform provider allows you to manage cloud infrastructure resources through the MCS API. It supports managing networking, firewalls, load balancing, virtual machines, VPN, alerting, and tenant administration.
+The MCS (Mijn Cloud Solutions) Terraform provider allows you to manage cloud infrastructure resources through the MCS API. It supports managing networking, firewalls, load balancing, virtual machines, VPN, monitoring, and tenant administration.
 
 **Provider source:** `registry.terraform.io/PinkRoccade-CloudSolutions/mcs`
 
@@ -21,7 +21,24 @@ The MCS (Mijn Cloud Solutions) Terraform provider allows you to manage cloud inf
   - [mcs_ippool](#mcs_ippool)
   - [mcs_public_ip_address](#mcs_public_ip_address-data-source)
   - [mcs_virtualmachine](#mcs_virtualmachine)
+  - [mcs_disk](#mcs_disk-data-source)
+  - [mcs_virtual_datacenter](#mcs_virtual_datacenter-data-source)
   - [mcs_job](#mcs_job)
+  - [mcs_certificate](#mcs_certificate-data-source)
+  - [mcs_cs_action](#mcs_cs_action-data-source)
+  - [mcs_cs_policy](#mcs_cs_policy-data-source)
+  - [mcs_csv_server](#mcs_csv_server-data-source)
+  - [mcs_lb_servicegroup](#mcs_lb_servicegroup-data-source)
+  - [mcs_lb_servicegroup_member](#mcs_lb_servicegroup_member-data-source)
+  - [mcs_lbv_server](#mcs_lbv_server-data-source)
+  - [mcs_lb_monitor](#mcs_lb_monitor-data-source)
+  - [mcs_dbl](#mcs_dbl-data-source)
+  - [mcs_domain_dbl](#mcs_domain_dbl-data-source)
+  - [mcs_monitor_ip](#mcs_monitor_ip-data-source)
+  - [mcs_contact](#mcs_contact-data-source)
+  - [mcs_customer](#mcs_customer-data-source)
+  - [mcs_nat_translation](#mcs_nat_translation-data-source)
+  - [mcs_site_to_site_vpn](#mcs_site_to_site_vpn-data-source)
 - [Resources](#resources)
   - [Tenant & Customer Management](#tenant--customer-management)
     - [mcs_contact](#mcs_contact)
@@ -47,8 +64,7 @@ The MCS (Mijn Cloud Solutions) Terraform provider allows you to manage cloud inf
     - [mcs_cs_policy](#mcs_cs_policy)
   - [Virtualization](#virtualization)
     - [mcs_virtual_datacenter](#mcs_virtual_datacenter)
-  - [Alerting & Monitoring](#alerting--monitoring)
-    - [mcs_alert](#mcs_alert)
+  - [Monitoring](#monitoring)
     - [mcs_monitor_ip](#mcs_monitor_ip)
   - [Deny/Block Lists](#denyblock-lists)
     - [mcs_dbl](#mcs_dbl)
@@ -535,6 +551,481 @@ output "job_status" {
 | `message`           | String | Computed | Job status message. |
 | `dryrun`            | Bool   | Computed | Whether this was a dry run. |
 | `continue_on_failure` | Bool | Computed | Whether the job continues on failure. |
+
+---
+
+### mcs_disk (Data Source)
+
+Look up virtual machine disks. Provide `name` or `id` for a single match, or omit both to list all.
+
+#### Example
+
+```hcl
+data "mcs_disk" "primary" {
+  name = "sda"
+}
+
+output "disk_size" {
+  value = data.mcs_disk.primary.size
+}
+```
+
+#### Attributes
+
+| Attribute | Type   | Mode     | Description |
+|----------|--------|----------|-------------|
+| `name`   | String | Optional | Exact disk name to look up. |
+| `id`     | String | Optional/Computed | Disk UUID. |
+| `size`   | Number | Computed | Size in GB. |
+| `path`   | String | Computed | Disk path. |
+| `type`   | String | Computed | Disk type: `thin` or `thick`. |
+| `disks`  | List   | Computed | All disks (populated when neither `name` nor `id` is set). |
+
+**Nested `disks` attributes:** `id`, `name`, `path`, `type` (String); `size` (Number) — all Computed.
+
+---
+
+### mcs_virtual_datacenter (Data Source)
+
+Look up virtual datacenters. Provide `name` or `id` for a single match, or omit both to list all.
+
+#### Example
+
+```hcl
+data "mcs_virtual_datacenter" "prod" {
+  name = "production-vdc"
+}
+```
+
+#### Attributes
+
+| Attribute             | Type   | Mode     | Description |
+|----------------------|--------|----------|-------------|
+| `name`               | String | Optional | Exact virtual datacenter name. |
+| `id`                 | String | Optional/Computed | Virtual datacenter UUID. |
+| `customer`           | String | Computed | Customer identifier. |
+| `virtual_datacenters` | List  | Computed | All virtual datacenters (populated when neither `name` nor `id` is set). |
+
+**Nested `virtual_datacenters` attributes:** `id`, `name`, `customer` — all String, Computed.
+
+---
+
+### mcs_certificate (Data Source)
+
+Look up load balancer certificates. Provide `name` or `id` for a single match, or omit both to list all.
+
+#### Example
+
+```hcl
+data "mcs_certificate" "web_cert" {
+  name = "web-ssl-cert"
+}
+```
+
+#### Attributes
+
+| Attribute            | Type   | Mode     | Description |
+|---------------------|--------|----------|-------------|
+| `name`              | String | Optional | Exact certificate name. |
+| `id`                | String | Optional/Computed | Certificate UUID. |
+| `ca`                | Bool   | Computed | Whether this is a CA certificate. |
+| `valid_to_timestamp` | String | Computed | Certificate expiry timestamp. |
+| `loadbalancer`      | String | Computed | UUID of the load balancer. |
+| `certificates`      | List   | Computed | All certificates (populated when neither `name` nor `id` is set). |
+
+**Nested `certificates` attributes:** `id`, `name`, `valid_to_timestamp`, `loadbalancer` (String); `ca` (Bool) — all Computed.
+
+---
+
+### mcs_cs_action (Data Source)
+
+Look up content switching actions. Provide `name` or `id` for a single match, or omit both to list all.
+
+#### Example
+
+```hcl
+data "mcs_cs_action" "route" {
+  name = "route-to-web"
+}
+```
+
+#### Attributes
+
+| Attribute      | Type   | Mode     | Description |
+|---------------|--------|----------|-------------|
+| `name`        | String | Optional | Exact action name. |
+| `id`          | String | Optional/Computed | Action UUID. |
+| `lbvserver`   | String | Computed | Target LB vServer. |
+| `customer`    | String | Computed | Customer identifier. |
+| `loadbalancer` | String | Computed | UUID of the load balancer. |
+| `cs_actions`  | List   | Computed | All CS actions (populated when neither `name` nor `id` is set). |
+
+**Nested `cs_actions` attributes:** `id`, `name`, `lbvserver`, `customer`, `loadbalancer` — all String, Computed.
+
+---
+
+### mcs_cs_policy (Data Source)
+
+Look up content switching policies. Provide `name` or `id` for a single match, or omit both to list all.
+
+#### Example
+
+```hcl
+data "mcs_cs_policy" "routing" {
+  name = "route-by-url"
+}
+```
+
+#### Attributes
+
+| Attribute      | Type   | Mode     | Description |
+|---------------|--------|----------|-------------|
+| `name`        | String | Optional | Exact policy name. |
+| `id`          | String | Optional/Computed | Policy UUID. |
+| `action`      | String | Computed | CS action name. |
+| `expression`  | String | Computed | Policy expression. |
+| `customer`    | String | Computed | Customer identifier. |
+| `application` | String | Computed | Application identifier. |
+| `loadbalancer` | String | Computed | UUID of the load balancer. |
+| `cs_policies` | List   | Computed | All CS policies (populated when neither `name` nor `id` is set). |
+
+**Nested `cs_policies` attributes:** `id`, `name`, `action`, `expression`, `customer`, `application`, `loadbalancer` — all String, Computed.
+
+---
+
+### mcs_csv_server (Data Source)
+
+Look up content switching virtual servers. Provide `name` or `id` for a single match, or omit both to list all.
+
+#### Example
+
+```hcl
+data "mcs_csv_server" "frontend" {
+  name = "web-csvserver"
+}
+```
+
+#### Attributes
+
+| Attribute      | Type         | Mode     | Description |
+|---------------|-------------|----------|-------------|
+| `name`        | String       | Optional | Exact CS vServer name. |
+| `id`          | String       | Optional/Computed | CS vServer UUID. |
+| `ufname`      | String       | Computed | User-friendly name. |
+| `ipv46`       | String       | Computed | IP address. |
+| `port`        | Number       | Computed | Listening port. |
+| `type`        | String       | Computed | Protocol type. |
+| `policies`    | List(String) | Computed | CS policy IDs. |
+| `certificate` | List(String) | Computed | SSL certificate IDs. |
+| `customer`    | String       | Computed | Customer identifier. |
+| `loadbalancer` | String      | Computed | UUID of the load balancer. |
+| `csv_servers` | List         | Computed | All CS vServers (populated when neither `name` nor `id` is set). |
+
+---
+
+### mcs_lb_servicegroup (Data Source)
+
+Look up load balancer service groups. Provide `name` or `id` for a single match, or omit both to list all.
+
+#### Example
+
+```hcl
+data "mcs_lb_servicegroup" "backend" {
+  name = "web-backend-sg"
+}
+```
+
+#### Attributes
+
+| Attribute        | Type         | Mode     | Description |
+|-----------------|-------------|----------|-------------|
+| `name`          | String       | Optional | Exact service group name. |
+| `id`            | String       | Optional/Computed | Service group UUID. |
+| `type`          | String       | Computed | Service type. |
+| `state`         | String       | Computed | State: `enable` or `disable`. |
+| `members`       | List(String) | Computed | Member IDs. |
+| `healthmonitor` | String       | Computed | Health monitor setting. |
+| `customer`      | String       | Computed | Customer identifier. |
+| `loadbalancer`  | String       | Computed | UUID of the load balancer. |
+| `lb_servicegroups` | List      | Computed | All service groups (populated when neither `name` nor `id` is set). |
+
+---
+
+### mcs_lb_servicegroup_member (Data Source)
+
+Look up load balancer service group members. Provide `id` for a single match, or omit to list all.
+
+#### Example
+
+```hcl
+data "mcs_lb_servicegroup_member" "all" {}
+```
+
+#### Attributes
+
+| Attribute               | Type   | Mode     | Description |
+|------------------------|--------|----------|-------------|
+| `id`                   | String | Optional/Computed | Member UUID. |
+| `address`              | String | Computed | IP address. |
+| `port`                 | Number | Computed | Port number. |
+| `servername`           | String | Computed | Server name. |
+| `weight`               | Number | Computed | Load balancing weight. |
+| `state`                | String | Computed | Member state. |
+| `customer`             | String | Computed | Customer identifier. |
+| `loadbalancer`         | String | Computed | UUID of the load balancer. |
+| `lb_servicegroup_members` | List | Computed | All members (populated when `id` is not set). |
+
+---
+
+### mcs_lbv_server (Data Source)
+
+Look up load balancer virtual servers. Provide `name` or `id` for a single match, or omit both to list all.
+
+#### Example
+
+```hcl
+data "mcs_lbv_server" "web_lb" {
+  name = "web-lbvserver"
+}
+```
+
+#### Attributes
+
+| Attribute      | Type         | Mode     | Description |
+|---------------|-------------|----------|-------------|
+| `name`        | String       | Optional | Exact LB vServer name. |
+| `id`          | String       | Optional/Computed | LB vServer UUID. |
+| `ipv46`       | String       | Computed | IP address. |
+| `port`        | Number       | Computed | Listening port. |
+| `type`        | String       | Computed | Protocol type. |
+| `servicegroup` | List(String) | Computed | Service group IDs. |
+| `certificate` | List(String) | Computed | SSL certificate IDs. |
+| `customer`    | String       | Computed | Customer identifier. |
+| `loadbalancer` | String      | Computed | UUID of the load balancer. |
+| `lbv_servers` | List         | Computed | All LB vServers (populated when neither `name` nor `id` is set). |
+
+---
+
+### mcs_lb_monitor (Data Source)
+
+Look up load balancer health monitors. Provide `name` or `id` for a single match, or omit both to list all.
+
+#### Example
+
+```hcl
+data "mcs_lb_monitor" "http" {
+  name = "http-health-check"
+}
+```
+
+#### Attributes
+
+| Attribute      | Type   | Mode     | Description |
+|---------------|--------|----------|-------------|
+| `name`        | String | Optional | Exact monitor name. |
+| `id`          | String | Optional/Computed | Monitor UUID. |
+| `type`        | String | Computed | Monitor type (e.g. `HTTP`, `TCP`). |
+| `interval`    | Number | Computed | Check interval in seconds. |
+| `resptimeout` | Number | Computed | Response timeout in seconds. |
+| `downtime`    | Number | Computed | Downtime threshold in seconds. |
+| `respcode`    | String | Computed | Expected response code. |
+| `secure`      | String | Computed | Secure connection setting. |
+| `httprequest` | String | Computed | HTTP request string. |
+| `loadbalancer` | String | Computed | UUID of the load balancer. |
+| `protected`   | Bool   | Computed | Whether the monitor is protected. |
+| `customer`    | String | Computed | Customer identifier. |
+| `lb_monitors` | List   | Computed | All monitors (populated when neither `name` nor `id` is set). |
+
+---
+
+### mcs_dbl (Data Source)
+
+Look up deny/block list entries. Provide `ipaddress` for a single match, or omit to list all.
+
+#### Example
+
+```hcl
+data "mcs_dbl" "blocked" {
+  ipaddress = "192.0.2.100"
+}
+```
+
+#### Attributes
+
+| Attribute    | Type   | Mode     | Description |
+|-------------|--------|----------|-------------|
+| `ipaddress` | String | Optional/Computed | IP address to look up. |
+| `id`        | String | Computed | Entry ID. |
+| `timestamp` | String | Computed | Creation timestamp. |
+| `source`    | String | Computed | Source of the block entry. |
+| `occurrence` | Number | Computed | Number of occurrences. |
+| `persistent` | Bool  | Computed | Whether the entry persists. |
+| `hostname`  | String | Computed | Resolved hostname. |
+| `dbls`      | List   | Computed | All DBL entries (populated when `ipaddress` is not set). |
+
+---
+
+### mcs_domain_dbl (Data Source)
+
+Look up domain deny/block list entries. Provide `id` for a single match, or omit to list all.
+
+#### Example
+
+```hcl
+data "mcs_domain_dbl" "all" {}
+```
+
+#### Attributes
+
+| Attribute    | Type   | Mode     | Description |
+|-------------|--------|----------|-------------|
+| `id`        | String | Optional/Computed | Entry ID. |
+| `domainname` | String | Computed | Blocked domain name. |
+| `timestamp` | String | Computed | Creation timestamp. |
+| `source`    | String | Computed | Source of the block entry. |
+| `persistent` | Bool  | Computed | Whether the entry persists. |
+| `occurrence` | Number | Computed | Number of occurrences. |
+| `domain_dbls` | List | Computed | All domain DBL entries (populated when `id` is not set). |
+
+---
+
+### mcs_monitor_ip (Data Source)
+
+Look up IP address monitoring entries. Provide `id` for a single match, or omit to list all.
+
+#### Example
+
+```hcl
+data "mcs_monitor_ip" "all" {}
+```
+
+#### Attributes
+
+| Attribute              | Type   | Mode     | Description |
+|-----------------------|--------|----------|-------------|
+| `id`                  | String | Optional/Computed | Monitor entry UUID. |
+| `ipaddress`           | String | Computed | Monitored IP address. |
+| `timestamp`           | String | Computed | Creation timestamp. |
+| `notify_email`        | String | Computed | Notification email. |
+| `last_check_timestamp` | String | Computed | Last check timestamp. |
+| `customer`            | String | Computed | Customer identifier. |
+| `comment`             | String | Computed | Comment. |
+| `monitor_ips`         | List   | Computed | All monitor entries (populated when `id` is not set). |
+
+---
+
+### mcs_contact (Data Source)
+
+Look up tenant contacts. Provide `name` (matches company) or `id` for a single match, or omit both to list all.
+
+#### Example
+
+```hcl
+data "mcs_contact" "admin" {
+  name = "Example Corp"
+}
+```
+
+#### Attributes
+
+| Attribute   | Type   | Mode     | Description |
+|------------|--------|----------|-------------|
+| `name`     | String | Optional | Company name to look up. |
+| `id`       | String | Optional/Computed | Contact ID. |
+| `company`  | String | Computed | Company name. |
+| `firstname` | String | Computed | First name. |
+| `lastname` | String | Computed | Last name. |
+| `email`    | String | Computed | Email address. |
+| `phone`    | String | Computed | Phone number. |
+| `address`  | String | Computed | Address. |
+| `contacts` | List   | Computed | All contacts (populated when neither `name` nor `id` is set). |
+
+---
+
+### mcs_customer (Data Source)
+
+Look up customers. Provide `name` or `id` for a single match, or omit both to list all.
+
+#### Example
+
+```hcl
+data "mcs_customer" "prod" {
+  name = "Production Customer"
+}
+```
+
+#### Attributes
+
+| Attribute        | Type         | Mode     | Description |
+|-----------------|-------------|----------|-------------|
+| `name`          | String       | Optional | Exact customer name. |
+| `id`            | String       | Optional/Computed | Customer ID. |
+| `contractid`    | String       | Computed | Contract identifier. |
+| `admin_contacts` | List(Number) | Computed | Administrative contact IDs. |
+| `tech_contacts` | List(Number) | Computed | Technical contact IDs. |
+| `customers`     | List         | Computed | All customers (populated when neither `name` nor `id` is set). |
+
+---
+
+### mcs_nat_translation (Data Source)
+
+Look up NAT translations. Provide `id` for a single match, or omit to list all.
+
+#### Example
+
+```hcl
+data "mcs_nat_translation" "all" {}
+```
+
+#### Attributes
+
+| Attribute          | Type   | Mode     | Description |
+|-------------------|--------|----------|-------------|
+| `id`              | String | Optional/Computed | NAT translation UUID. |
+| `public_ip`       | String | Computed | Public IP UUID. |
+| `interface`       | String | Computed | Private interface UUID. |
+| `firewall`        | String | Computed | Firewall UUID. |
+| `translation`     | String | Computed | Translation description. |
+| `private_ip`      | String | Computed | Private IP address. |
+| `translation_type` | String | Computed | Translation type. |
+| `public_port`     | Number | Computed | Public port (if port forwarding). |
+| `private_port`    | Number | Computed | Private port (if port forwarding). |
+| `protocol`        | String | Computed | Protocol. |
+| `customer`        | String | Computed | Customer identifier. |
+| `description`     | String | Computed | Description. |
+| `state`           | String | Computed | Sync state. |
+| `enabled`         | Bool   | Computed | Whether enabled. |
+| `nat_translations` | List  | Computed | All NAT translations (populated when `id` is not set). |
+
+---
+
+### mcs_site_to_site_vpn (Data Source)
+
+Look up site-to-site VPN tunnels. Provide `name` or `id` for a single match, or omit both to list all.
+
+#### Example
+
+```hcl
+data "mcs_site_to_site_vpn" "office" {
+  name = "office-vpn-tunnel"
+}
+```
+
+#### Attributes
+
+| Attribute              | Type   | Mode     | Description |
+|-----------------------|--------|----------|-------------|
+| `name`                | String | Optional | Exact VPN tunnel name. |
+| `id`                  | String | Optional/Computed | VPN ID. |
+| `uuid`                | String | Computed | VPN UUID. |
+| `state`               | String | Computed | Tunnel state. |
+| `last_status`         | String | Computed | Last known status. |
+| `resets`              | Number | Computed | Number of resets. |
+| `last_check`          | String | Computed | Last health check timestamp. |
+| `last_reset`          | String | Computed | Last reset timestamp. |
+| `created_at_timestamp` | String | Computed | Creation timestamp. |
+| `updated_at_timestamp` | String | Computed | Last update timestamp. |
+| `vpns`                | List   | Computed | All VPN tunnels (populated when neither `name` nor `id` is set). |
 
 ---
 
@@ -1191,56 +1682,7 @@ resource "mcs_virtual_datacenter" "production" {
 
 ---
 
-### Alerting & Monitoring
-
-#### mcs_alert
-
-Manages an alert in the MCS alerting system.
-
-##### Example
-
-```hcl
-resource "mcs_alert" "high_cpu" {
-  resource    = "web-server-01"
-  event       = "HighCPUUtilization"
-  severity    = "warning"
-  status      = "open"
-  environment = "production"
-  service     = "web"
-  text        = "CPU utilization exceeded 90% threshold"
-  value       = "95%"
-}
-```
-
-##### Attributes
-
-| Attribute    | Type   | Required | Description |
-|-------------|--------|----------|-------------|
-| `resource`  | String | **Yes**  | Resource identifier the alert is related to. |
-| `event`     | String | **Yes**  | Event name. |
-| `environment` | String | No     | Environment (e.g. `production`, `staging`). |
-| `correlate` | String | No       | Correlation key for grouping related alerts. |
-| `service`   | String | No       | Service name. |
-| `value`     | String | No       | Alert value. |
-| `status`    | String | No       | Alert status: `open` or `closed`. |
-| `text`      | String | No       | Alert description text. |
-| `type`      | String | No       | Alert type. |
-| `origin`    | String | No       | Alert origin. |
-| `tags`      | String | No       | Tags. |
-| `severity`  | String | No       | Severity level: `informational`, `minor`, `warning`, `major`, `critical`, or `fatal`. |
-
-**Read-only attributes:**
-
-| Attribute         | Type   | Description |
-|------------------|--------|-------------|
-| `id`             | String | Alert ID. |
-| `url`            | String | Alert URL. |
-| `createtime`     | String | Creation timestamp. |
-| `lastupdate`     | String | Last update timestamp. |
-| `duplicate_count` | Number | Number of duplicate alerts. |
-| `timeout`        | Number | Alert timeout. |
-
----
+### Monitoring
 
 #### mcs_monitor_ip
 
