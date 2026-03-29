@@ -16,7 +16,7 @@ terraform {
   required_providers {
     mcs = {
       source  = "PinkRoccade-CloudSolutions/mcs"
-      version = "~> 0.1"
+      version = "~> 0.0.2"
     }
   }
 }
