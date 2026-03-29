@@ -23,7 +23,6 @@ type NATTranslationResourceModel struct {
 	PublicIP        types.String `tfsdk:"public_ip"`
 	Interface       types.String `tfsdk:"interface"`
 	Firewall        types.String `tfsdk:"firewall"`
-	Translation     types.String `tfsdk:"translation"`
 	PrivateIP       types.String `tfsdk:"private_ip"`
 	TranslationType types.String `tfsdk:"translation_type"`
 	PublicPort      types.Int64  `tfsdk:"public_port"`
@@ -31,7 +30,6 @@ type NATTranslationResourceModel struct {
 	Protocol        types.String `tfsdk:"protocol"`
 	Customer        types.String `tfsdk:"customer"`
 	Description     types.String `tfsdk:"description"`
-	State           types.String `tfsdk:"state"`
 	Enabled         types.Bool   `tfsdk:"enabled"`
 }
 
@@ -42,7 +40,7 @@ type natTranslationAPIModel struct {
 	Firewall        string `json:"firewall"`
 	Translation     string `json:"translation,omitempty"`
 	PrivateIP       string `json:"private_ip,omitempty"`
-	TranslationType string `json:"translation_type,omitempty"`
+	TranslationType string `json:"translation_type"`
 	PublicPort      *int64 `json:"public_port"`
 	PrivatePort     *int64 `json:"private_port"`
 	Protocol        string `json:"protocol,omitempty"`
@@ -81,17 +79,13 @@ func (r *NATTranslationResource) Schema(_ context.Context, _ resource.SchemaRequ
 				Required:    true,
 				Description: "UUID of the firewall.",
 			},
-			"translation": schema.StringAttribute{
-				Computed:    true,
-				Description: "Human-readable translation summary (read-only).",
-			},
 			"private_ip": schema.StringAttribute{
 				Computed:    true,
 				Description: "Resolved private IP address (read-only).",
 			},
 			"translation_type": schema.StringAttribute{
-				Computed:    true,
-				Description: "Translation type: one_to_one or port_forward (read-only, determined by the API).",
+				Required:    true,
+				Description: "Translation type: one_to_one or port_forward.",
 			},
 			"public_port": schema.Int64Attribute{
 				Optional:    true,
@@ -114,10 +108,6 @@ func (r *NATTranslationResource) Schema(_ context.Context, _ resource.SchemaRequ
 				Optional:    true,
 				Computed:    true,
 				Description: "Description of the NAT translation.",
-			},
-			"state": schema.StringAttribute{
-				Computed:    true,
-				Description: "Sync state: synced, unsynced, error, or deleted.",
 			},
 			"enabled": schema.BoolAttribute{
 				Optional:    true,
@@ -221,11 +211,12 @@ func (r *NATTranslationResource) Delete(ctx context.Context, req resource.Delete
 
 func buildNATAPIRequest(plan *NATTranslationResourceModel) natTranslationAPIModel {
 	apiReq := natTranslationAPIModel{
-		PublicIP:  plan.PublicIP.ValueString(),
-		Interface: plan.Interface.ValueString(),
-		Firewall:  plan.Firewall.ValueString(),
-		Customer:  plan.Customer.ValueString(),
-		Enabled:   true,
+		PublicIP:         plan.PublicIP.ValueString(),
+		Interface:        plan.Interface.ValueString(),
+		Firewall:         plan.Firewall.ValueString(),
+		TranslationType:  plan.TranslationType.ValueString(),
+		Customer:         plan.Customer.ValueString(),
+		Enabled:          true,
 	}
 	if !plan.PublicPort.IsNull() {
 		v := plan.PublicPort.ValueInt64()
@@ -252,13 +243,11 @@ func mapNATToState(state *NATTranslationResourceModel, api *natTranslationAPIMod
 	state.PublicIP = types.StringValue(api.PublicIP)
 	state.Interface = types.StringValue(api.Interface)
 	state.Firewall = types.StringValue(api.Firewall)
-	state.Translation = types.StringValue(api.Translation)
 	state.PrivateIP = types.StringValue(api.PrivateIP)
 	state.TranslationType = types.StringValue(api.TranslationType)
 	state.Protocol = types.StringValue(api.Protocol)
 	state.Customer = types.StringValue(api.Customer)
 	state.Description = types.StringValue(api.Description)
-	state.State = types.StringValue(api.State)
 	state.Enabled = types.BoolValue(api.Enabled)
 	if api.PublicPort != nil {
 		state.PublicPort = types.Int64Value(*api.PublicPort)

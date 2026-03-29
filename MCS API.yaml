@@ -5088,24 +5088,6 @@ components:
         id:
           type: integer
           readOnly: true
-        created_by_user:
-          allOf:
-          - $ref: '#/components/schemas/UserSlim'
-          readOnly: true
-        updated_by_user:
-          allOf:
-          - $ref: '#/components/schemas/UserSlim'
-          readOnly: true
-        created_at_timestamp:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Time when this object was created
-        updated_at_timestamp:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Time when this object was last updated
         company:
           type: string
           maxLength: 255
@@ -5124,16 +5106,9 @@ components:
         address:
           type: string
           maxLength: 255
-        tenant:
-          type: integer
       required:
       - company
-      - created_at_timestamp
-      - created_by_user
       - id
-      - tenant
-      - updated_at_timestamp
-      - updated_by_user
     CsAction:
       type: object
       properties:
@@ -5244,58 +5219,28 @@ components:
         id:
           type: string
           readOnly: true
-        created_by_user:
-          allOf:
-          - $ref: '#/components/schemas/UserSlim'
-          readOnly: true
-        updated_by_user:
-          allOf:
-          - $ref: '#/components/schemas/UserSlim'
-          readOnly: true
-        created_at_timestamp:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Time when this object was created
-        updated_at_timestamp:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Time when this object was last updated
         name:
           type: string
           description: Customer name.
           maxLength: 255
-        contractid:
-          type: string
-          description: For future use.
-          maxLength: 255
-        tenant:
-          type: integer
-        sdm:
-          type: integer
-          nullable: true
-          description: Service Delivery Manager for the customer, can be used for
-            compliance notifications.
-        tech_contacts:
-          type: array
-          items:
-            type: integer
-          description: Technical contact of the customer, used for troubleshooting.
         admin_contacts:
           type: array
           items:
             type: integer
           description: Administrative contact of the customer, used for billing and
             maintenance notifications.
+        tech_contacts:
+          type: array
+          items:
+            type: integer
+          description: Technical contact of the customer, used for troubleshooting.
+        contractid:
+          type: string
+          description: For future use.
+          maxLength: 255
       required:
-      - created_at_timestamp
-      - created_by_user
       - id
       - name
-      - tenant
-      - updated_at_timestamp
-      - updated_by_user
     CustomerSerializerMinimal:
       type: object
       properties:
@@ -6240,9 +6185,7 @@ components:
           type: string
           readOnly: true
         translation_type:
-          allOf:
-          - $ref: '#/components/schemas/TranslationTypeEnum'
-          readOnly: true
+          $ref: '#/components/schemas/TranslationTypeEnum'
         public_port:
           type: integer
           nullable: true
@@ -7094,24 +7037,6 @@ components:
         id:
           type: integer
           readOnly: true
-        created_by_user:
-          allOf:
-          - $ref: '#/components/schemas/UserSlim'
-          readOnly: true
-        updated_by_user:
-          allOf:
-          - $ref: '#/components/schemas/UserSlim'
-          readOnly: true
-        created_at_timestamp:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Time when this object was created
-        updated_at_timestamp:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Time when this object was last updated
         company:
           type: string
           maxLength: 255
@@ -7130,8 +7055,6 @@ components:
         address:
           type: string
           maxLength: 255
-        tenant:
-          type: integer
     PatchedCsAction:
       type: object
       properties:
@@ -7223,50 +7146,25 @@ components:
         id:
           type: string
           readOnly: true
-        created_by_user:
-          allOf:
-          - $ref: '#/components/schemas/UserSlim'
-          readOnly: true
-        updated_by_user:
-          allOf:
-          - $ref: '#/components/schemas/UserSlim'
-          readOnly: true
-        created_at_timestamp:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Time when this object was created
-        updated_at_timestamp:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Time when this object was last updated
         name:
           type: string
           description: Customer name.
           maxLength: 255
-        contractid:
-          type: string
-          description: For future use.
-          maxLength: 255
-        tenant:
-          type: integer
-        sdm:
-          type: integer
-          nullable: true
-          description: Service Delivery Manager for the customer, can be used for
-            compliance notifications.
-        tech_contacts:
-          type: array
-          items:
-            type: integer
-          description: Technical contact of the customer, used for troubleshooting.
         admin_contacts:
           type: array
           items:
             type: integer
           description: Administrative contact of the customer, used for billing and
             maintenance notifications.
+        tech_contacts:
+          type: array
+          items:
+            type: integer
+          description: Technical contact of the customer, used for troubleshooting.
+        contractid:
+          type: string
+          description: For future use.
+          maxLength: 255
     PatchedDbl:
       type: object
       description: Adds nested create feature
@@ -7536,9 +7434,7 @@ components:
           type: string
           readOnly: true
         translation_type:
-          allOf:
-          - $ref: '#/components/schemas/TranslationTypeEnum'
-          readOnly: true
+          $ref: '#/components/schemas/TranslationTypeEnum'
         public_port:
           type: integer
           nullable: true
@@ -7561,6 +7457,10 @@ components:
     PatchedPublicIPAddress:
       type: object
       properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
         ip_address:
           type: string
           readOnly: true
@@ -7572,7 +7472,9 @@ components:
           type: string
           maxLength: 255
         status:
-          $ref: '#/components/schemas/PublicIPAddressStatusEnum'
+          allOf:
+          - $ref: '#/components/schemas/PublicIPAddressStatusEnum'
+          readOnly: true
         type:
           oneOf:
           - $ref: '#/components/schemas/PublicIPAddressTypeEnum'
@@ -7654,6 +7556,10 @@ components:
     PublicIPAddress:
       type: object
       properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
         ip_address:
           type: string
           readOnly: true
@@ -7665,7 +7571,9 @@ components:
           type: string
           maxLength: 255
         status:
-          $ref: '#/components/schemas/PublicIPAddressStatusEnum'
+          allOf:
+          - $ref: '#/components/schemas/PublicIPAddressStatusEnum'
+          readOnly: true
         type:
           oneOf:
           - $ref: '#/components/schemas/PublicIPAddressTypeEnum'
@@ -7674,7 +7582,9 @@ components:
           type: string
           nullable: true
       required:
+      - id
       - ip_address
+      - status
     PublicIPAddressStatusEnum:
       enum:
       - available
@@ -7881,17 +7791,6 @@ components:
           maxLength: 254
       required:
       - id
-      - username
-    UserSlim:
-      type: object
-      properties:
-        username:
-          type: string
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
-          pattern: ^[\w.@+-]+$
-          maxLength: 150
-      required:
       - username
     VirtualDatacenter:
       type: object

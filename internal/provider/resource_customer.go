@@ -22,7 +22,6 @@ type CustomerResourceModel struct {
 	Id                 types.String `tfsdk:"id"`
 	Name               types.String `tfsdk:"name"`
 	ContractId         types.String `tfsdk:"contractid"`
-	Tenant             types.Int64  `tfsdk:"tenant"`
 	Sdm                types.Int64  `tfsdk:"sdm"`
 	TechContacts  types.List `tfsdk:"tech_contacts"`
 	AdminContacts types.List `tfsdk:"admin_contacts"`
@@ -32,7 +31,6 @@ type customerAPIModel struct {
 	Id                 string  `json:"id,omitempty"`
 	Name               string  `json:"name"`
 	ContractId         string  `json:"contractid,omitempty"`
-	Tenant             int64   `json:"tenant"`
 	Sdm                int64   `json:"sdm,omitempty"`
 	TechContacts  []int64 `json:"tech_contacts"`
 	AdminContacts []int64 `json:"admin_contacts"`
@@ -58,9 +56,6 @@ func (r *CustomerResource) Schema(_ context.Context, _ resource.SchemaRequest, r
 			},
 			"contractid": schema.StringAttribute{
 				Optional: true,
-			},
-			"tenant": schema.Int64Attribute{
-				Required: true,
 			},
 			"sdm": schema.Int64Attribute{
 				Optional: true,
@@ -98,8 +93,7 @@ func (r *CustomerResource) Create(ctx context.Context, req resource.CreateReques
 	}
 
 	apiReq := customerAPIModel{
-		Name:   plan.Name.ValueString(),
-		Tenant: plan.Tenant.ValueInt64(),
+		Name: plan.Name.ValueString(),
 	}
 	if !plan.ContractId.IsNull() {
 		apiReq.ContractId = plan.ContractId.ValueString()
@@ -158,7 +152,6 @@ func (r *CustomerResource) Read(ctx context.Context, req resource.ReadRequest, r
 	state.Id = types.StringValue(apiResp.Id)
 	state.Name = types.StringValue(apiResp.Name)
 	state.ContractId = types.StringValue(apiResp.ContractId)
-	state.Tenant = types.Int64Value(apiResp.Tenant)
 	state.Sdm = types.Int64Value(apiResp.Sdm)
 
 	techList, diags := types.ListValueFrom(ctx, types.Int64Type, apiResp.TechContacts)
@@ -180,8 +173,7 @@ func (r *CustomerResource) Update(ctx context.Context, req resource.UpdateReques
 	}
 
 	apiReq := customerAPIModel{
-		Name:   plan.Name.ValueString(),
-		Tenant: plan.Tenant.ValueInt64(),
+		Name: plan.Name.ValueString(),
 	}
 	if !plan.ContractId.IsNull() {
 		apiReq.ContractId = plan.ContractId.ValueString()

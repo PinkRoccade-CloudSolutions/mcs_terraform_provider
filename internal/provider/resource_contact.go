@@ -27,7 +27,6 @@ type ContactResourceModel struct {
 	Email              types.String `tfsdk:"email"`
 	Phone              types.String `tfsdk:"phone"`
 	Address types.String `tfsdk:"address"`
-	Tenant  types.Int64  `tfsdk:"tenant"`
 }
 
 type contactAPIModel struct {
@@ -38,7 +37,6 @@ type contactAPIModel struct {
 	Email              string `json:"email,omitempty"`
 	Phone              string `json:"phone,omitempty"`
 	Address string `json:"address,omitempty"`
-	Tenant  int64  `json:"tenant"`
 }
 
 func NewContactResource() resource.Resource {
@@ -74,9 +72,6 @@ func (r *ContactResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 			"address": schema.StringAttribute{
 				Optional: true,
 			},
-			"tenant": schema.Int64Attribute{
-				Required: true,
-			},
 		},
 	}
 }
@@ -108,7 +103,6 @@ func (r *ContactResource) Create(ctx context.Context, req resource.CreateRequest
 		Email:     plan.Email.ValueString(),
 		Phone:     plan.Phone.ValueString(),
 		Address:   plan.Address.ValueString(),
-		Tenant:    plan.Tenant.ValueInt64(),
 	}
 
 	var apiResp contactAPIModel
@@ -148,7 +142,6 @@ func (r *ContactResource) Read(ctx context.Context, req resource.ReadRequest, re
 	state.Email = types.StringValue(apiResp.Email)
 	state.Phone = types.StringValue(apiResp.Phone)
 	state.Address = types.StringValue(apiResp.Address)
-	state.Tenant = types.Int64Value(apiResp.Tenant)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
@@ -167,7 +160,6 @@ func (r *ContactResource) Update(ctx context.Context, req resource.UpdateRequest
 		Email:     plan.Email.ValueString(),
 		Phone:     plan.Phone.ValueString(),
 		Address:   plan.Address.ValueString(),
-		Tenant:    plan.Tenant.ValueInt64(),
 	}
 
 	var apiResp contactAPIModel

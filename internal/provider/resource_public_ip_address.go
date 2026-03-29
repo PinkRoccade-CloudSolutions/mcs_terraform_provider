@@ -23,7 +23,6 @@ type PublicIPAddressResourceModel struct {
 	IPAddress   types.String `tfsdk:"ip_address"`
 	Pool        types.String `tfsdk:"pool"`
 	Description types.String `tfsdk:"description"`
-	Status      types.String `tfsdk:"status"`
 	Type        types.String `tfsdk:"type"`
 	Customer    types.String `tfsdk:"customer"`
 }
@@ -67,11 +66,6 @@ func (r *PublicIPAddressResource) Schema(_ context.Context, _ resource.SchemaReq
 				Optional:    true,
 				Computed:    true,
 				Description: "Description of the public IP address.",
-			},
-			"status": schema.StringAttribute{
-				Optional:    true,
-				Computed:    true,
-				Description: "Status: available, assigned, or reserved.",
 			},
 			"type": schema.StringAttribute{
 				Optional:    true,
@@ -186,9 +180,6 @@ func buildPublicIPAPIRequest(plan *PublicIPAddressResourceModel) publicIPAddress
 	if !plan.Description.IsNull() {
 		apiReq.Description = plan.Description.ValueString()
 	}
-	if !plan.Status.IsNull() {
-		apiReq.Status = plan.Status.ValueString()
-	}
 	if !plan.Type.IsNull() {
 		apiReq.Type = plan.Type.ValueString()
 	}
@@ -203,7 +194,6 @@ func mapPublicIPToState(state *PublicIPAddressResourceModel, api *publicIPAddres
 	state.Id = types.StringValue(api.Id)
 	state.IPAddress = types.StringValue(api.IPAddress)
 	state.Description = types.StringValue(api.Description)
-	state.Status = types.StringValue(api.Status)
 	state.Type = types.StringValue(api.Type)
 	if api.Pool != nil {
 		state.Pool = types.StringValue(*api.Pool)
