@@ -507,7 +507,6 @@ resource "mcs_contact" "admin" {
   lastname  = "Doe"
   email     = "john.doe@example.com"
   phone     = "+31 6 12345678"
-  tenant    = 10000
 }
 ```
 
@@ -516,7 +515,6 @@ resource "mcs_contact" "admin" {
 | Attribute   | Type   | Required | Description |
 |------------|--------|----------|-------------|
 | `company`  | String | **Yes**  | Company name. |
-| `tenant`   | Number | **Yes**  | Tenant ID this contact belongs to. |
 | `firstname` | String | No      | First name. |
 | `lastname` | String | No       | Last name. |
 | `email`    | String | No       | Email address. |
@@ -536,7 +534,6 @@ Manages a customer within a tenant.
 ```hcl
 resource "mcs_customer" "example" {
   name           = "Example Customer"
-  tenant         = 10000
   tech_contacts  = [mcs_contact.admin.id]
   admin_contacts = [mcs_contact.admin.id]
 }
@@ -547,7 +544,6 @@ resource "mcs_customer" "example" {
 | Attribute        | Type         | Required | Description |
 |-----------------|-------------|----------|-------------|
 | `name`          | String       | **Yes**  | Customer name. |
-| `tenant`        | Number       | **Yes**  | Tenant ID. |
 | `contractid`    | String       | No       | Contract identifier. |
 | `sdm`           | Number       | No       | Service Delivery Manager ID. |
 | `tech_contacts` | List(Number) | No       | List of technical contact IDs. |
@@ -569,7 +565,6 @@ Manages a public IP address allocation from an IP pool.
 resource "mcs_public_ip_address" "web" {
   pool        = data.mcs_ippool.nat_pool.id
   description = "Web server public IP"
-  status      = "assigned"
   type        = "nat"
   customer    = mcs_customer.example.id
 }
@@ -581,7 +576,6 @@ resource "mcs_public_ip_address" "web" {
 |-------------|--------|----------|-------------|
 | `pool`      | String | No       | UUID of the IP pool to allocate from. |
 | `description` | String | No     | Description of the public IP address. |
-| `status`    | String | No       | Status: `available`, `assigned`, or `reserved`. |
 | `type`      | String | No       | Type: `nat`, `vip`, or `loadbalancer`. |
 | `customer`  | String | No       | Customer identifier. |
 
@@ -602,11 +596,12 @@ Manages a NAT translation between a public IP and a private interface. Supports 
 
 ```hcl
 resource "mcs_nat_translation" "web_nat" {
-  public_ip   = mcs_public_ip_address.web.id
-  interface   = data.mcs_virtualmachine.webserver.interfaces[0].id
-  firewall    = data.mcs_firewall.internet.id
-  customer    = mcs_customer.example.id
-  description = "1:1 NAT for web server"
+  public_ip        = mcs_public_ip_address.web.id
+  interface        = data.mcs_virtualmachine.webserver.interfaces[0].id
+  firewall         = data.mcs_firewall.internet.id
+  translation_type = "one_to_one"
+  customer         = mcs_customer.example.id
+  description      = "1:1 NAT for web server"
 }
 ```
 
@@ -614,40 +609,39 @@ resource "mcs_nat_translation" "web_nat" {
 
 ```hcl
 resource "mcs_nat_translation" "https_forward" {
-  public_ip    = mcs_public_ip_address.web.id
-  interface    = data.mcs_interface.eth0.id
-  firewall     = data.mcs_firewall.internet.id
-  public_port  = 443
-  private_port = 8443
-  protocol     = "tcp"
-  customer     = mcs_customer.example.id
-  description  = "HTTPS port forward"
+  public_ip        = mcs_public_ip_address.web.id
+  interface        = data.mcs_interface.eth0.id
+  firewall         = data.mcs_firewall.internet.id
+  translation_type = "port_forward"
+  public_port      = 443
+  private_port     = 8443
+  protocol         = "tcp"
+  customer         = mcs_customer.example.id
+  description      = "HTTPS port forward"
 }
 ```
 
 ##### Attributes
 
-| Attribute      | Type   | Required | Description |
-|---------------|--------|----------|-------------|
-| `public_ip`   | String | **Yes**  | UUID of the public IP address. |
-| `interface`   | String | **Yes**  | UUID of the private interface. |
-| `firewall`    | String | **Yes**  | UUID of the firewall. |
-| `customer`    | String | **Yes**  | Customer identifier. |
-| `public_port` | Number | No       | Public port (required for port forwarding). |
-| `private_port` | Number | No      | Private port (required for port forwarding). |
-| `protocol`    | String | No       | Protocol: `tcp` or `udp`. |
-| `description` | String | No       | Description of the NAT translation. |
-| `enabled`     | Bool   | No       | Whether the NAT translation is enabled. Defaults to `true`. |
+| Attribute          | Type   | Required | Description |
+|-------------------|--------|----------|-------------|
+| `public_ip`       | String | **Yes**  | UUID of the public IP address. |
+| `interface`       | String | **Yes**  | UUID of the private interface. |
+| `firewall`        | String | **Yes**  | UUID of the firewall. |
+| `translation_type` | String | **Yes** | Translation type: `one_to_one` or `port_forward`. |
+| `customer`        | String | **Yes**  | Customer identifier. |
+| `public_port`     | Number | No       | Public port (required for port forwarding). |
+| `private_port`    | Number | No       | Private port (required for port forwarding). |
+| `protocol`        | String | No       | Protocol: `tcp` or `udp`. |
+| `description`     | String | No       | Description of the NAT translation. |
+| `enabled`         | Bool   | No       | Whether the NAT translation is enabled. Defaults to `true`. |
 
 **Read-only attributes:**
 
-| Attribute          | Type   | Description |
-|-------------------|--------|-------------|
-| `id`              | String | UUID of the NAT translation. |
-| `translation`     | String | Human-readable translation summary. |
-| `private_ip`      | String | Resolved private IP address. |
-| `translation_type` | String | `one_to_one` or `port_forward` (determined by the API). |
-| `state`           | String | Sync state: `synced`, `unsynced`, `error`, or `deleted`. |
+| Attribute    | Type   | Description |
+|-------------|--------|-------------|
+| `id`        | String | UUID of the NAT translation. |
+| `private_ip` | String | Resolved private IP address. |
 
 ---
 
@@ -1355,12 +1349,10 @@ resource "mcs_contact" "admin" {
   lastname  = "Smith"
   email     = "jane.smith@example.com"
   phone     = "+31 6 98765432"
-  tenant    = 10000
 }
 
 resource "mcs_customer" "production" {
   name           = "Production Customer"
-  tenant         = 10000
   tech_contacts  = [mcs_contact.admin.id]
   admin_contacts = [mcs_contact.admin.id]
 }
@@ -1370,17 +1362,17 @@ resource "mcs_customer" "production" {
 resource "mcs_public_ip_address" "web" {
   pool        = data.mcs_ippool.nat_pool.id
   description = "Web server public IP"
-  status      = "assigned"
   type        = "nat"
   customer    = mcs_customer.production.id
 }
 
 resource "mcs_nat_translation" "web_nat" {
-  public_ip   = mcs_public_ip_address.web.id
-  interface   = data.mcs_virtualmachine.webserver.interfaces[0].id
-  firewall    = data.mcs_firewall.internet.id
-  customer    = mcs_customer.production.id
-  description = "1:1 NAT for web server"
+  public_ip        = mcs_public_ip_address.web.id
+  interface        = data.mcs_virtualmachine.webserver.interfaces[0].id
+  firewall         = data.mcs_firewall.internet.id
+  translation_type = "one_to_one"
+  customer         = mcs_customer.production.id
+  description      = "1:1 NAT for web server"
 }
 
 # --- Firewall rules ---
@@ -1416,10 +1408,6 @@ resource "mcs_virtual_datacenter" "production" {
 
 output "public_ip" {
   value = mcs_public_ip_address.web.ip_address
-}
-
-output "nat_state" {
-  value = mcs_nat_translation.web_nat.state
 }
 
 output "vm_details" {
