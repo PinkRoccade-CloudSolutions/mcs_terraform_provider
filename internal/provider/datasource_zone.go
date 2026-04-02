@@ -18,28 +18,41 @@ type ZoneDataSource struct {
 }
 
 type ZoneDataSourceModel struct {
-	Name        types.String `tfsdk:"name"`
-	Uuid        types.String `tfsdk:"uuid"`
-	Description types.String `tfsdk:"description"`
-	Adom        types.String `tfsdk:"adom"`
-	TransitVrf  types.String `tfsdk:"transit_vrf"`
-	Zones       []ZoneModel  `tfsdk:"zones"`
+	Name          types.String          `tfsdk:"name"`
+	Uuid          types.String          `tfsdk:"uuid"`
+	Description   types.String          `tfsdk:"description"`
+	Adom          types.String          `tfsdk:"adom"`
+	TransitVrf    types.String          `tfsdk:"transit_vrf"`
+	Loadbalancers []ZoneLoadbalancerModel `tfsdk:"loadbalancers"`
+	Zones         []ZoneModel           `tfsdk:"zones"`
 }
 
 type ZoneModel struct {
-	Uuid        types.String `tfsdk:"uuid"`
-	Name        types.String `tfsdk:"name"`
-	Description types.String `tfsdk:"description"`
-	Adom        types.String `tfsdk:"adom"`
-	TransitVrf  types.String `tfsdk:"transit_vrf"`
+	Uuid          types.String          `tfsdk:"uuid"`
+	Name          types.String          `tfsdk:"name"`
+	Description   types.String          `tfsdk:"description"`
+	Adom          types.String          `tfsdk:"adom"`
+	TransitVrf    types.String          `tfsdk:"transit_vrf"`
+	Loadbalancers []ZoneLoadbalancerModel `tfsdk:"loadbalancers"`
+}
+
+type ZoneLoadbalancerModel struct {
+	Id   types.String `tfsdk:"id"`
+	Name types.String `tfsdk:"name"`
 }
 
 type zoneAPIModel struct {
-	Uuid        string `json:"uuid"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Adom        string `json:"adom"`
-	TransitVrf  string `json:"transit_vrf"`
+	Uuid          string                    `json:"uuid"`
+	Name          string                    `json:"name"`
+	Description   string                    `json:"description"`
+	Adom          string                    `json:"adom"`
+	TransitVrf    string                    `json:"transit_vrf"`
+	Loadbalancers []zoneLoadbalancerAPIModel `json:"loadbalancers"`
+}
+
+type zoneLoadbalancerAPIModel struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
 }
 
 func NewZoneDataSource() datasource.DataSource {
@@ -51,6 +64,15 @@ func (d *ZoneDataSource) Metadata(_ context.Context, req datasource.MetadataRequ
 }
 
 func (d *ZoneDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+	loadbalancerAttrs := map[string]schema.Attribute{
+		"id": schema.StringAttribute{
+			Computed: true,
+		},
+		"name": schema.StringAttribute{
+			Computed: true,
+		},
+	}
+
 	zoneAttrs := map[string]schema.Attribute{
 		"uuid": schema.StringAttribute{
 			Computed: true,
@@ -66,6 +88,13 @@ func (d *ZoneDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, r
 		},
 		"transit_vrf": schema.StringAttribute{
 			Computed: true,
+		},
+		"loadbalancers": schema.ListNestedAttribute{
+			Computed:    true,
+			Description: "Load balancers available in this zone.",
+			NestedObject: schema.NestedAttributeObject{
+				Attributes: loadbalancerAttrs,
+			},
 		},
 	}
 
@@ -91,6 +120,13 @@ func (d *ZoneDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, r
 			"transit_vrf": schema.StringAttribute{
 				Computed:    true,
 				Description: "Transit VRF of the matched zone (only set when `name` is provided).",
+			},
+			"loadbalancers": schema.ListNestedAttribute{
+				Computed:    true,
+				Description: "Load balancers available in the matched zone (only set when `name` is provided).",
+				NestedObject: schema.NestedAttributeObject{
+					Attributes: loadbalancerAttrs,
+				},
 			},
 			"zones": schema.ListNestedAttribute{
 				Computed:    true,
@@ -153,27 +189,41 @@ func (d *ZoneDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 		config.Description = types.StringValue(match.Description)
 		config.Adom = types.StringValue(match.Adom)
 		config.TransitVrf = types.StringValue(match.TransitVrf)
+		config.Loadbalancers = mapLoadbalancers(match.Loadbalancers)
 		config.Zones = []ZoneModel{}
 		resp.Diagnostics.Append(resp.State.Set(ctx, &config)...)
 		return
 	}
 
 	state := ZoneDataSourceModel{
-		Name:        types.StringNull(),
-		Uuid:        types.StringNull(),
-		Description: types.StringNull(),
-		Adom:        types.StringNull(),
-		TransitVrf:  types.StringNull(),
-		Zones:       make([]ZoneModel, 0, len(page.Results)),
+		Name:          types.StringNull(),
+		Uuid:          types.StringNull(),
+		Description:   types.StringNull(),
+		Adom:          types.StringNull(),
+		TransitVrf:    types.StringNull(),
+		Loadbalancers: []ZoneLoadbalancerModel{},
+		Zones:         make([]ZoneModel, 0, len(page.Results)),
 	}
 	for _, item := range page.Results {
 		state.Zones = append(state.Zones, ZoneModel{
-			Uuid:        types.StringValue(item.Uuid),
-			Name:        types.StringValue(item.Name),
-			Description: types.StringValue(item.Description),
-			Adom:        types.StringValue(item.Adom),
-			TransitVrf:  types.StringValue(item.TransitVrf),
+			Uuid:          types.StringValue(item.Uuid),
+			Name:          types.StringValue(item.Name),
+			Description:   types.StringValue(item.Description),
+			Adom:          types.StringValue(item.Adom),
+			TransitVrf:    types.StringValue(item.TransitVrf),
+			Loadbalancers: mapLoadbalancers(item.Loadbalancers),
 		})
 	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+}
+
+func mapLoadbalancers(lbs []zoneLoadbalancerAPIModel) []ZoneLoadbalancerModel {
+	out := make([]ZoneLoadbalancerModel, 0, len(lbs))
+	for _, lb := range lbs {
+		out = append(out, ZoneLoadbalancerModel{
+			Id:   types.StringValue(lb.Id),
+			Name: types.StringValue(lb.Name),
+		})
+	}
+	return out
 }

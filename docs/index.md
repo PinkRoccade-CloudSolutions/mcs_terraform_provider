@@ -228,6 +228,10 @@ data "mcs_zone" "bc_zone" {
 output "zone_transit_vrf" {
   value = data.mcs_zone.bc_zone.transit_vrf
 }
+
+output "zone_loadbalancers" {
+  value = data.mcs_zone.bc_zone.loadbalancers
+}
 ```
 
 #### Example — List all
@@ -242,16 +246,24 @@ locals {
 
 #### Attributes
 
-| Attribute     | Type   | Mode     | Description |
-|--------------|--------|----------|-------------|
-| `name`       | String | Optional | Exact zone name to look up. |
-| `uuid`       | String | Computed | Zone UUID. |
-| `description` | String | Computed | Zone description. |
-| `adom`       | String | Computed | Administrative domain. |
-| `transit_vrf` | String | Computed | Transit VRF identifier. |
-| `zones`      | List   | Computed | List of all zones (populated when `name` is not set). |
+| Attribute       | Type   | Mode     | Description |
+|----------------|--------|----------|-------------|
+| `name`         | String | Optional | Exact zone name to look up. |
+| `uuid`         | String | Computed | Zone UUID. |
+| `description`  | String | Computed | Zone description. |
+| `adom`         | String | Computed | Administrative domain. |
+| `transit_vrf`  | String | Computed | Transit VRF identifier. |
+| `loadbalancers` | List   | Computed | Load balancers available in the matched zone (only set when `name` is provided). |
+| `zones`        | List   | Computed | List of all zones (populated when `name` is not set). |
 
-**Nested `zones` attributes:** `uuid`, `name`, `description`, `adom`, `transit_vrf` — all String, Computed.
+**Nested `loadbalancers` attributes:**
+
+| Attribute | Type   | Mode     | Description |
+|-----------|--------|----------|-------------|
+| `id`      | String | Computed | Load balancer identifier. |
+| `name`    | String | Computed | Load balancer name. |
+
+**Nested `zones` attributes:** `uuid`, `name`, `description`, `adom`, `transit_vrf` — all String, Computed. Each zone also contains a nested `loadbalancers` list with the same attributes as above.
 
 ---
 

@@ -352,8 +352,19 @@ func TestAccZoneDataSource_ByName(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(map[string]interface{}{
 			"results": []map[string]interface{}{
-				{"uuid": "zone-uuid-1", "name": "dmz", "description": "DMZ Zone", "adom": "adom1", "transit_vrf": "vrf1"},
-				{"uuid": "zone-uuid-2", "name": "internal", "description": "Internal Zone", "adom": "adom1", "transit_vrf": "vrf2"},
+				{
+					"uuid": "zone-uuid-1", "name": "dmz", "description": "DMZ Zone", "adom": "adom1", "transit_vrf": "vrf1",
+					"loadbalancers": []map[string]interface{}{
+						{"id": "lb-001", "name": "lb-dmz-1"},
+						{"id": "lb-002", "name": "lb-dmz-2"},
+					},
+				},
+				{
+					"uuid": "zone-uuid-2", "name": "internal", "description": "Internal Zone", "adom": "adom1", "transit_vrf": "vrf2",
+					"loadbalancers": []map[string]interface{}{
+						{"id": "lb-003", "name": "lb-internal-1"},
+					},
+				},
 			},
 		})
 	})
@@ -371,6 +382,11 @@ data "mcs_zone" "test" {
 					resource.TestCheckResourceAttr("data.mcs_zone.test", "uuid", "zone-uuid-1"),
 					resource.TestCheckResourceAttr("data.mcs_zone.test", "description", "DMZ Zone"),
 					resource.TestCheckResourceAttr("data.mcs_zone.test", "transit_vrf", "vrf1"),
+					resource.TestCheckResourceAttr("data.mcs_zone.test", "loadbalancers.#", "2"),
+					resource.TestCheckResourceAttr("data.mcs_zone.test", "loadbalancers.0.id", "lb-001"),
+					resource.TestCheckResourceAttr("data.mcs_zone.test", "loadbalancers.0.name", "lb-dmz-1"),
+					resource.TestCheckResourceAttr("data.mcs_zone.test", "loadbalancers.1.id", "lb-002"),
+					resource.TestCheckResourceAttr("data.mcs_zone.test", "loadbalancers.1.name", "lb-dmz-2"),
 				),
 			},
 		},
@@ -385,8 +401,16 @@ func TestAccZoneDataSource_ListAll(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(map[string]interface{}{
 			"results": []map[string]interface{}{
-				{"uuid": "zone-uuid-1", "name": "dmz", "description": "DMZ", "adom": "a1", "transit_vrf": "v1"},
-				{"uuid": "zone-uuid-2", "name": "internal", "description": "Internal", "adom": "a1", "transit_vrf": "v2"},
+				{
+					"uuid": "zone-uuid-1", "name": "dmz", "description": "DMZ", "adom": "a1", "transit_vrf": "v1",
+					"loadbalancers": []map[string]interface{}{
+						{"id": "lb-001", "name": "lb-dmz-1"},
+					},
+				},
+				{
+					"uuid": "zone-uuid-2", "name": "internal", "description": "Internal", "adom": "a1", "transit_vrf": "v2",
+					"loadbalancers": []map[string]interface{}{},
+				},
 			},
 		})
 	})
@@ -401,7 +425,11 @@ data "mcs_zone" "all" {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.mcs_zone.all", "zones.#", "2"),
 					resource.TestCheckResourceAttr("data.mcs_zone.all", "zones.0.name", "dmz"),
+					resource.TestCheckResourceAttr("data.mcs_zone.all", "zones.0.loadbalancers.#", "1"),
+					resource.TestCheckResourceAttr("data.mcs_zone.all", "zones.0.loadbalancers.0.id", "lb-001"),
+					resource.TestCheckResourceAttr("data.mcs_zone.all", "zones.0.loadbalancers.0.name", "lb-dmz-1"),
 					resource.TestCheckResourceAttr("data.mcs_zone.all", "zones.1.name", "internal"),
+					resource.TestCheckResourceAttr("data.mcs_zone.all", "zones.1.loadbalancers.#", "0"),
 				),
 			},
 		},
