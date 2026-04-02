@@ -25,7 +25,6 @@ type LbServicegroupMemberResourceModel struct {
 	Port         types.Int64  `tfsdk:"port"`
 	Servername   types.String `tfsdk:"servername"`
 	Weight       types.Int64  `tfsdk:"weight"`
-	State        types.String `tfsdk:"state"`
 	Customer     types.String `tfsdk:"customer"`
 	Loadbalancer types.String `tfsdk:"loadbalancer"`
 }
@@ -36,7 +35,6 @@ type lbServicegroupMemberAPIModel struct {
 	Port         *int64  `json:"port,omitempty"`
 	Servername   string  `json:"servername"`
 	Weight       *int64  `json:"weight,omitempty"`
-	State        *string `json:"state,omitempty"`
 	Customer     *string `json:"customer,omitempty"`
 	Loadbalancer *string `json:"loadbalancer,omitempty"`
 }
@@ -68,9 +66,6 @@ func (r *LbServicegroupMemberResource) Schema(_ context.Context, _ resource.Sche
 				Required: true,
 			},
 			"weight": schema.Int64Attribute{
-				Optional: true,
-			},
-			"state": schema.StringAttribute{
 				Optional: true,
 			},
 			"customer": schema.StringAttribute{
@@ -117,10 +112,6 @@ func (r *LbServicegroupMemberResource) Create(ctx context.Context, req resource.
 		v := plan.Weight.ValueInt64()
 		apiModel.Weight = &v
 	}
-	if !plan.State.IsNull() {
-		v := plan.State.ValueString()
-		apiModel.State = &v
-	}
 	if !plan.Customer.IsNull() {
 		v := plan.Customer.ValueString()
 		apiModel.Customer = &v
@@ -142,7 +133,6 @@ func (r *LbServicegroupMemberResource) Create(ctx context.Context, req resource.
 	plan.Port = types.Int64PointerValue(apiResp.Port)
 	plan.Servername = types.StringValue(apiResp.Servername)
 	plan.Weight = types.Int64PointerValue(apiResp.Weight)
-	plan.State = types.StringPointerValue(apiResp.State)
 	plan.Customer = types.StringPointerValue(apiResp.Customer)
 	plan.Loadbalancer = types.StringPointerValue(apiResp.Loadbalancer)
 
@@ -172,7 +162,6 @@ func (r *LbServicegroupMemberResource) Read(ctx context.Context, req resource.Re
 	state.Port = types.Int64PointerValue(apiResp.Port)
 	state.Servername = types.StringValue(apiResp.Servername)
 	state.Weight = types.Int64PointerValue(apiResp.Weight)
-	state.State = types.StringPointerValue(apiResp.State)
 	state.Customer = types.StringPointerValue(apiResp.Customer)
 	state.Loadbalancer = types.StringPointerValue(apiResp.Loadbalancer)
 
@@ -204,10 +193,6 @@ func (r *LbServicegroupMemberResource) Update(ctx context.Context, req resource.
 		v := plan.Weight.ValueInt64()
 		apiModel.Weight = &v
 	}
-	if !plan.State.IsNull() {
-		v := plan.State.ValueString()
-		apiModel.State = &v
-	}
 	if !plan.Customer.IsNull() {
 		v := plan.Customer.ValueString()
 		apiModel.Customer = &v
@@ -229,7 +214,6 @@ func (r *LbServicegroupMemberResource) Update(ctx context.Context, req resource.
 	plan.Port = types.Int64PointerValue(apiResp.Port)
 	plan.Servername = types.StringValue(apiResp.Servername)
 	plan.Weight = types.Int64PointerValue(apiResp.Weight)
-	plan.State = types.StringPointerValue(apiResp.State)
 	plan.Customer = types.StringPointerValue(apiResp.Customer)
 	plan.Loadbalancer = types.StringPointerValue(apiResp.Loadbalancer)
 

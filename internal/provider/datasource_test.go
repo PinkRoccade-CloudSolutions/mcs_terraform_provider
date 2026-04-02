@@ -1404,8 +1404,8 @@ func TestAccLbServicegroupMemberDataSource_ListAll(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(map[string]interface{}{
 			"results": []map[string]interface{}{
-				{"id": "sgm-001", "address": "10.0.0.5", "port": 8080, "servername": "web1", "weight": 100, "state": "UP"},
-				{"id": "sgm-002", "address": "10.0.0.6", "port": 8080, "servername": "web2", "weight": 100, "state": "UP"},
+				{"id": "sgm-001", "address": "10.0.0.5", "port": 8080, "servername": "web1", "weight": 100},
+				{"id": "sgm-002", "address": "10.0.0.6", "port": 8080, "servername": "web2", "weight": 100},
 			},
 		})
 	})

@@ -782,7 +782,6 @@ data "mcs_lb_servicegroup_member" "all" {}
 | `port`                 | Number | Computed | Port number. |
 | `servername`           | String | Computed | Server name. |
 | `weight`               | Number | Computed | Load balancing weight. |
-| `state`                | String | Computed | Member state. |
 | `customer`             | String | Computed | Customer identifier. |
 | `loadbalancer`         | String | Computed | UUID of the load balancer. |
 | `lb_servicegroup_members` | List | Computed | All members (populated when `id` is not set). |
@@ -1521,7 +1520,6 @@ resource "mcs_lb_servicegroup_member" "web1" {
 | `servername`  | String | **Yes**  | Server name. |
 | `port`        | Number | No       | Port number. Defaults to `0`. |
 | `weight`      | Number | No       | Load balancing weight. |
-| `state`       | String | No       | Member state. |
 | `customer`    | String | No       | Customer identifier. |
 | `loadbalancer` | String | No      | UUID of the load balancer. |
 

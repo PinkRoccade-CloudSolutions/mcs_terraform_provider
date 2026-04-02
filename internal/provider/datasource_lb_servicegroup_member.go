@@ -22,7 +22,6 @@ type LbServicegroupMemberDataSourceModel struct {
 	Port                  types.Int64                    `tfsdk:"port"`
 	Servername            types.String                   `tfsdk:"servername"`
 	Weight                types.Int64                    `tfsdk:"weight"`
-	State                 types.String                   `tfsdk:"state"`
 	Customer              types.String                   `tfsdk:"customer"`
 	Loadbalancer          types.String                   `tfsdk:"loadbalancer"`
 	LbServicegroupMembers []LbServicegroupMemberListModel `tfsdk:"lb_servicegroup_members"`
@@ -34,7 +33,6 @@ type LbServicegroupMemberListModel struct {
 	Port         types.Int64  `tfsdk:"port"`
 	Servername   types.String `tfsdk:"servername"`
 	Weight       types.Int64  `tfsdk:"weight"`
-	State        types.String `tfsdk:"state"`
 	Customer     types.String `tfsdk:"customer"`
 	Loadbalancer types.String `tfsdk:"loadbalancer"`
 }
@@ -45,7 +43,6 @@ type lbServicegroupMemberDSAPIModel struct {
 	Port         *int64  `json:"port,omitempty"`
 	Servername   string  `json:"servername"`
 	Weight       *int64  `json:"weight,omitempty"`
-	State        *string `json:"state,omitempty"`
 	Customer     *string `json:"customer,omitempty"`
 	Loadbalancer *string `json:"loadbalancer,omitempty"`
 }
@@ -71,9 +68,6 @@ func (d *LbServicegroupMemberDataSource) Schema(_ context.Context, _ datasource.
 		"weight": schema.Int64Attribute{
 			Computed: true,
 		},
-		"state": schema.StringAttribute{
-			Computed: true,
-		},
 		"customer":     schema.StringAttribute{Computed: true},
 		"loadbalancer": schema.StringAttribute{Computed: true},
 	}
@@ -94,9 +88,6 @@ func (d *LbServicegroupMemberDataSource) Schema(_ context.Context, _ datasource.
 			},
 			"servername": schema.StringAttribute{Computed: true},
 			"weight": schema.Int64Attribute{
-				Computed: true,
-			},
-			"state": schema.StringAttribute{
 				Computed: true,
 			},
 			"customer":     schema.StringAttribute{Computed: true},
@@ -157,7 +148,6 @@ func (d *LbServicegroupMemberDataSource) Read(ctx context.Context, req datasourc
 		Port:                  types.Int64Null(),
 		Servername:            types.StringNull(),
 		Weight:                types.Int64Null(),
-		State:                 types.StringNull(),
 		Customer:              types.StringNull(),
 		Loadbalancer:          types.StringNull(),
 		LbServicegroupMembers: make([]LbServicegroupMemberListModel, 0, len(page.Results)),
@@ -182,7 +172,6 @@ func setSingleLbServicegroupMember(state *LbServicegroupMemberDataSourceModel, m
 	} else {
 		state.Weight = types.Int64Null()
 	}
-	state.State = types.StringPointerValue(m.State)
 	state.Customer = types.StringPointerValue(m.Customer)
 	state.Loadbalancer = types.StringPointerValue(m.Loadbalancer)
 	state.LbServicegroupMembers = []LbServicegroupMemberListModel{}
@@ -203,7 +192,6 @@ func toLbServicegroupMemberListModel(m *lbServicegroupMemberDSAPIModel) LbServic
 		Port:         port,
 		Servername:   types.StringValue(m.Servername),
 		Weight:       weight,
-		State:        types.StringPointerValue(m.State),
 		Customer:     types.StringPointerValue(m.Customer),
 		Loadbalancer: types.StringPointerValue(m.Loadbalancer),
 	}
